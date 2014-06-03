@@ -47,6 +47,9 @@ public class Version {
        Configures the URI further adding page data to payload
 
     Notes:
+     Dictionary and JSON context values should be in String format e.g. "{'name':'Kevin', ...}"
+     I would recommend using one tracker for one tracking instance type.
+       This is because only certain fields are refreshed every loop to reduce overhead at high iteration speed.
      Arrays, Dictionaries, JSON contest is all homogeneous, must all be of the String type.
 
     Testing Phases:

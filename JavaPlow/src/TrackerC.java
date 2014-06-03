@@ -74,7 +74,7 @@ public class TrackerC implements Tracker {
      *   All call the main track() function after configuring payload.
      */
     public void track() throws URISyntaxException, ClientProtocolException, IOException{
-        URI uri = buildURI("http", collector_uri, "/i");
+        URI uri = buildURI("https", collector_uri, "/i");
         System.out.println("Payload:\n" + this.payload.toString());
         HttpGet httpGet = makeHttpGet(uri);
         System.out.println("URI: " + uri);
@@ -83,7 +83,8 @@ public class TrackerC implements Tracker {
     }
 
     public void track_page_view(String page_url, String page_title, String referrer, String context)
-            throws UnsupportedEncodingException, IOException, URISyntaxException, JSONException{
+            throws URISyntaxException, JSONException, IOException{
+        assert this.stringContractor.checkContract(this.contracts, PlowContractor.non_empty_string, page_url);
         if (context != null && !context.equals("")) {
             JSONObject jsonContext = stringToJSON(context);
             this.payload = this.payload.track_page_view_config(page_url, page_title, referrer, DEFAULT_VENDOR, jsonContext);
@@ -95,7 +96,67 @@ public class TrackerC implements Tracker {
         this.track();
     }
 
-//    public void
+    public void track_struct_event(String category, String action, String label, String property,
+                                   int value, String vendor, String context)
+            throws JSONException, URISyntaxException, IOException {
+        String valueStr = String.valueOf(value);
+        assert this.stringContractor.checkContract(this.contracts, PlowContractor.non_empty_string, category);
+        assert this.stringContractor.checkContract(this.contracts, PlowContractor.non_empty_string, valueStr);
+        if (context != null && !context.equals("")) {
+            JSONObject jsonContext = stringToJSON(context);
+            this.payload = this.payload.track_struct_event_config(category, action, label, property, valueStr,
+                    DEFAULT_VENDOR, jsonContext);
+        } else {
+            this.payload = this.payload.track_struct_event_config(category, action, label, property, valueStr,
+                    DEFAULT_VENDOR, null);
+        }
+        this.track();
+    }
+
+    //How to do unstructured. Need to have a dictionary of String:*, make it a Map<String,Object>?
+    public void track_unstruct_event(String eventVendor, String eventName, String dictInfo, String context)
+            throws JSONException, IOException, URISyntaxException{
+        assert this.stringContractor.checkContract(this.contracts, PlowContractor.non_empty_string, eventVendor);
+        assert this.stringContractor.checkContract(this.contracts, PlowContractor.non_empty_string, eventName);
+        assert this.stringContractor.checkContract(this.contracts, PlowContractor.non_empty_dict, dictInfo);
+        JSONObject jsonDict = stringToJSON(dictInfo);
+        if (context != null && !context.equals("")) {
+            JSONObject jsonContext = stringToJSON(context);
+            this.payload = this.payload.track_unstruct_event_config(eventVendor, eventName, jsonDict, jsonContext);
+        } else {
+            this.payload = this.payload.track_unstruct_event_config(eventVendor, eventName, jsonDict, null);
+        }
+        this.track();
+    }
+
+    public void track_screen_view(String name, String id, String context)
+            throws JSONException, IOException, URISyntaxException{
+        assert this.stringContractor.checkContract(this.contracts, PlowContractor.non_empty_string, name);
+        String screenViewProperties = "{'name':'" + name + "'}";
+        if (id != null)
+            this.payload.add("id", id);
+        this.track_unstruct_event(DEFAULT_VENDOR, "screen_view", screenViewProperties, context);
+    }
+
+    public void track_ecommerce_transaction_item(String order_id, String sku, double price, int quantity, String name,
+            String category, String currency, String context)
+            throws JSONException, URISyntaxException, IOException {
+        assert this.stringContractor.checkContract(this.contracts, PlowContractor.non_empty_string, order_id);
+        assert this.stringContractor.checkContract(this.contracts, PlowContractor.non_empty_string, sku);
+        String[] nullFix = new String[] {name, category, currency};
+        for (int i=0; i<3; i++)
+            if (nullFix[i]==null)
+                nullFix[i]="";
+        if (context != null && !context.equals("")) {
+            JSONObject jsonContext = stringToJSON(context);
+            this.payload = this.payload.track_ecommerce_transaction_item_config(order_id, sku, price, quantity, nullFix[0],
+                    nullFix[1], nullFix[2], DEFAULT_VENDOR, jsonContext);
+        } else {
+            this.payload = this.payload.track_ecommerce_transaction_item_config(order_id, sku, price, quantity, nullFix[0],
+                    nullFix[1], nullFix[2], DEFAULT_VENDOR, null);
+        }
+        this.track();
+    }
 
     /* Web functions
      *   Functions used to configure the Get request
@@ -212,12 +273,18 @@ public class TrackerC implements Tracker {
         this.payload = this.payload.add("res", String.valueOf(width) + "x" + String.valueOf(height));
     }
 
+    public void setViewport(int width, int height){
+        assert this.integerContractor.checkContract(this.contracts, PlowContractor.positive_number, height);
+        assert this.integerContractor.checkContract(this.contracts, PlowContractor.positive_number, width);
+        this.payload = this.payload.add("vp", String.valueOf(width) + "x" + String.valueOf(height));
+    }
+
     public void setColorDepth(int depth){
         assert this.integerContractor.checkContract(this.contracts, PlowContractor.positive_number, depth) || depth==0;
         this.payload = this.payload.add("cd", String.valueOf(depth));
     }
 
-    public void setTimeZone(String timezone){
+    public void setTimezone(String timezone){
         assert this.stringContractor.checkContract(this.contracts, PlowContractor.non_empty_string, timezone);
         this.payload = this.payload.add("tz", timezone);
     }
@@ -233,19 +300,25 @@ public class TrackerC implements Tracker {
     //Test case main function
     public static void main(String[] args) throws URISyntaxException, IOException, ClientProtocolException, JSONException {
 //        PayloadMap pd = new PayloadMapC();
-//        Tracker t1 = new TrackerC("d31jxa70e9zxsp.cloudfront.net","Main Tracker");
+//        Tracker t1 = new TrackerC("d31jxa70e9zxsp.cloudfront.net","HelloWorld");
+//        t1.track();
 //        t1.setPayload(pd);
-        Tracker t1 = new TrackerC("d31jxa70e9zxsp.cloudfront.net", "Tracker Test", "JavaPlow", "com.saggezza", true,true);
-        t1.setUserID("Kevin");
-        t1.setLanguage("eng");
-        t1.setPlatform("cnsl");
-        t1.setScreenResolution(1260, 1080);
-        String context = "{" +
-                            " 'movie':'Godzilla', " +
-                            " 'character':'Kevin', " +
-                            " 'role':'Programmer' " +
-                         "}";
-        t1.track_page_view("www.saggezza.com", "Saggezza Home", "Kevin Gleason", context);
+//        Tracker t1 = new TrackerC("d31jxa70e9zxsp.cloudfront.net", "Tracker Test", "JavaPlow", "com.saggezza", true, true);
+        //TEST, Distro 2:
+        Tracker t1 = new TrackerC("d2pac8zn4o1kva.cloudfront.net", "Tracker Test", "JavaPlow", "com.saggezza", true, true);
+        t1.setUserID("User1");
+        t1.setLanguage("ital");
+        t1.setPlatform("mob");
+        t1.setScreenResolution(760, 610);
+        String context = "{'Zone':'USA', 'Phone':'Droid', 'Time':'2pm'}";
+        for (int i = 0; i < 5; i++) {
+            System.out.println("Loop " + i);
+            String dict = "{'Iteration Number':'" + i + "'}";
+//            t1.track_unstruct_event("Lube Insights", "Data Loop", dict, context);
+//            t1.track_struct_event("Items", "Stuff", "Pants", "Green Blue", 3, DEFAULT_VENDOR, context);
+//            t1.track_page_view("www.saggezza.com", "Saggezza Home", "Kevin Gleason", null);
+            t1.track_ecommerce_transaction_item("IT1023", "SKUVAL", 29.99, 2, "boots", "Shoes","USD",context);
+        }
     }
 }
 

@@ -43,9 +43,8 @@ public class PayloadMapC implements PayloadMap{
         this.parameters.put("tid", String.valueOf(tid));
     }
 
-    public void setTimestamp(){
-        Date date = new Date(System.currentTimeMillis());
-        this.parameters.put("dtm", date.toString());
+    private void setTimestamp(){
+        this.parameters.put("dtm", String.valueOf(System.currentTimeMillis()));
     }
 
     /* Addition functions
@@ -64,9 +63,19 @@ public class PayloadMapC implements PayloadMap{
         return new PayloadMapC(parameters, configurations);
     }
 
-    public PayloadMap add(Map<String,String> dict){
-        this.parameters.putAll(dict);
-        return new PayloadMapC(parameters, configurations);
+    public PayloadMap add_unstruct(JSONObject dictInfo, boolean encode_base64)
+            throws UnsupportedEncodingException{
+        //Encode parameter
+        if (dictInfo == null)
+            return this;  //Catch this in contractor
+        String json = dictInfo.toString();
+        if (encode_base64) {
+            json = base64encode(json);
+            this.parameters.put("ue_px", json);
+        }
+        else
+            this.parameters.put("ue_pr", json);
+        return new PayloadMapC(this.parameters, this.configurations);
     }
 
     // Assert that JSONObject is not empty
@@ -103,21 +112,64 @@ public class PayloadMapC implements PayloadMap{
      *   Functions used to configure the different types of trackers
     */
 
-//    t.track_page_view("http://www.films.com", "Homepage", context={
-//        "movie_poster": {
-//            "movie_name": "Solaris",
-//                    "poster_country": "JP",
-//                    "poster_year$dt": new Date(1978, 1, 1)
-//        }
-//    })
-
     public PayloadMap track_page_view_config(String page_url, String page_title, String referrer,
                                              String vendor, JSONObject context) throws UnsupportedEncodingException{
         Map<String, Object> page_view_config = new HashMap<String, Object>();
+        this.setTimestamp();
         this.parameters.put("e", "pv");
         this.parameters.put("url", page_url);
         this.parameters.put("page", page_title);
         this.parameters.put("refr", referrer);
+        this.parameters.put("evn", vendor);
+        if (context==null)
+            return new PayloadMapC(this.parameters, this.configurations);
+        PayloadMap tmp = new PayloadMapC(this.parameters, this.configurations);
+        tmp = tmp.add_json(context, this.configurations.get("encode_base64"));
+        return tmp;
+    }
+
+    public PayloadMap track_struct_event_config(String category, String action, String label, String property,
+                                                String value, String vendor, JSONObject context)
+            throws UnsupportedEncodingException{
+        this.setTimestamp();
+        this.parameters.put("e","se");
+        this.parameters.put("se_ca", category);
+        this.parameters.put("se_ac", action);
+        this.parameters.put("se_la", label);
+        this.parameters.put("se_pr", property);
+        this.parameters.put("se_va", value);
+        this.parameters.put("evn", vendor);
+        if (context==null)
+            return new PayloadMapC(this.parameters, this.configurations);
+        PayloadMap tmp = new PayloadMapC(this.parameters, this.configurations);
+        tmp = tmp.add_json(context, this.configurations.get("encode_base64"));
+        return tmp;
+    }
+
+    public PayloadMap track_unstruct_event_config(String eventVendor, String eventName, JSONObject dictInfo,
+                                                  JSONObject context) throws UnsupportedEncodingException{
+        this.setTimestamp();
+        this.parameters.put("e","ue");
+        this.parameters.put("ue_na", eventName);
+        PayloadMap tmp = new PayloadMapC(this.parameters, this.configurations);
+        tmp = tmp.add_unstruct(dictInfo, this.configurations.get("encode_base64"));
+        if (context==null)
+            return tmp;
+        tmp = tmp.add_json(context, this.configurations.get("encode_base64"));
+        return tmp;
+    }
+
+    public PayloadMap track_ecommerce_transaction_item_config(String order_id, String sku, double price, int quantity,
+            String name, String category, String currency, String vendor, JSONObject context)
+            throws UnsupportedEncodingException{
+        this.parameters.put("e","ti");
+        this.parameters.put("ti_id", order_id);
+        this.parameters.put("ti_sk", sku);
+        this.parameters.put("ti_nm", name);
+        this.parameters.put("ti_ca", category);
+        this.parameters.put("ti_pr", String.valueOf(price));
+        this.parameters.put("ti_qu", String.valueOf(quantity));
+        this.parameters.put("ti_cu", currency);
         this.parameters.put("evn", vendor);
         if (context==null)
             return new PayloadMapC(this.parameters, this.configurations);
