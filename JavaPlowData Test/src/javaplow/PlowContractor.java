@@ -3,6 +3,8 @@
 // Date: 5/28/14
 // Use: The design by contract interface
 
+package javaplow;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;

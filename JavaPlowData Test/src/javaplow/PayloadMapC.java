@@ -1,7 +1,9 @@
-// File: PayloadMapC.java
+// File: javaplow.PayloadMapC.java
 // Author: Kevin Gleason
 // Date: 5/28/14
-// Use: The implementation for the PayloadMap interface
+// Use: The implementation for the javaplow.PayloadMap interface
+
+package javaplow;
 
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
@@ -13,12 +15,12 @@ import java.util.Random;
 import java.util.Set;
 
 
-public class PayloadMapC implements PayloadMap {
+public class PayloadMapC implements PayloadMap{
     private LinkedHashMap<String,String> parameters;
     private LinkedHashMap<String,Boolean> configurations;
 
 
-    //Create empty PayloadMap
+    //Create empty javaplow.PayloadMap
     public PayloadMapC(){
         this.parameters = new LinkedHashMap<String, String>();
         this.configurations = new LinkedHashMap<String, Boolean>();
@@ -113,7 +115,7 @@ public class PayloadMapC implements PayloadMap {
         return new PayloadMapC(this.parameters, this.configurations);
     }
 
-    /* Web Tracker functions
+    /* Web javaplow.Tracker functions
      *   Functions used to configure the different types of trackers
     */
 
