@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
 
 public interface Tracker {
@@ -24,8 +25,12 @@ public interface Tracker {
             throws JSONException, IOException, URISyntaxException;
     public void track_screen_view(String name, String id, String context)
             throws JSONException, IOException, URISyntaxException;
-    public void track_ecommerce_transaction_item(String order_id, String sku, double price, int quantity, String name,
-            String category, String currency, String context)throws JSONException, URISyntaxException, IOException;
+    public void track_ecommerce_transaction_item(String order_id, String sku, Double price, Integer quantity, String name,
+            String category, String currency, String context, String transaction_id)throws JSONException, URISyntaxException, IOException;
+    public void track_ecommerce_transaction(String order_id, Double total_value, String affiliation, Double tax_value,
+            Double shipping, String city, String state, String country, String currency, List<Map<String,String>> items, String context)
+            throws JSONException, UnsupportedEncodingException, IOException, URISyntaxException;
+
     //Setters
     public void setContractors(PlowContractor<Integer> integerContractor, PlowContractor<String> stringContractor,
                                PlowContractor<Map<String,Object>> dictionaryContractor);
