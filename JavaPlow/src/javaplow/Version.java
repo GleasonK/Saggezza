@@ -1,27 +1,29 @@
-// File: Version.java
+// File: javaplow.Version.java
 // Author: Kevin Gleason
 // Date: 5/28/14
-// Use: Version and instruction for Tracking process
+// Use: javaplow.Version and instruction for Tracking process
+
+package javaplow;
 
 public class Version {
     static final String VERSION = "0.0.2";
 }
 /**
- * JavaPlow Tracker
+ * JavaPlow javaplow.Tracker
 
     Instructions to Use:
 
-     Instantiate a PayloadMap and a Tracker:
-      PayloadMap pd = new PayloadMapC();
-      Tracker t1 = new TrackerC("collector_uri","namespace");
+     Instantiate a javaplow.PayloadMap and a javaplow.Tracker:
+      javaplow.PayloadMap pd = new javaplow.PayloadMapC();
+      javaplow.Tracker t1 = new javaplow.TrackerC("collector_uri","namespace");
 
      Configure payload if needed:
       pd.add_json("{
-                    'Movie':'Shawshank Redemption',
-                    'Time' :'100 Minutes'
+                    \"Movie\":\"Shawshank Redemption\",
+                    \"Time\" :\"100 Minutes\"
                    }");
 
-     Attach the payload to the Tracker:
+     Attach the payload to the javaplow.Tracker:
       t1.setPayload(pd);
 
      Configure the payload as you must:

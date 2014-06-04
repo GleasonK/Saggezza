@@ -1,10 +1,12 @@
-// File: PayloadMap.java
+// File: javaplow.PayloadMap.java
 // Author: Kevin Gleason
 // Date: 5/28/14
-// Use: The interface for PayloadMap,
-  // used to create the get request payload
+// Use: The interface for javaplow.PayloadMap,
+// used to create the get request payload
 
-import org.json.JSONObject;
+package javaplow;
+
+import org.json.*;
 
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashMap;

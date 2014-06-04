@@ -1,22 +1,21 @@
-// File: Tracker.java
+// File: javaplow.Tracker.java
 // Author: Kevin Gleason
 // Date: 5/28/14
-// Use: The implementation of the Tracker interface
+// Use: The implementation of the javaplow.Tracker interface
 
+package javaplow;
 
 /* To use:
  *   You must first declare a payload and a tracker.
  *   Build up the payload with whatever it needs
- *   Add the payload to Tracker with setPayload()
+ *   Add the payload to javaplow.Tracker with setPayload()
  *     Payload will configure itself further and prepare for request
  *   Call the Track specific track event
  *     Payload will be configured further
  *     Get request sent to server
  */
 
-import org.apache.http.Header;
-import org.apache.http.HeaderIterator;
-import org.apache.http.HttpResponse;
+import org.apache.http.*;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -72,7 +71,7 @@ public class TrackerC implements Tracker {
         this.setPayload(new PayloadMapC());
     }
 
-    /* Tracker functions
+    /* javaplow.Tracker functions
      *   A fre types of tracker functions depending on object being tracked
      *   All call the main track() function after configuring payload.
      */
@@ -286,7 +285,7 @@ public class TrackerC implements Tracker {
         setStandardNV();
     }
 
-    //Only called once when the Payload class is attacked to the Tracker
+    //Only called once when the Payload class is attacked to the javaplow.Tracker
     private void setStandardNV(){
         this.payload = this.payload.add_standard_nv_pairs(DEFAULT_PLATFORM, VERSION, this.namespace, "");
     }
@@ -340,7 +339,7 @@ public class TrackerC implements Tracker {
     //Test case main function
     public static void main(String[] args) throws URISyntaxException, IOException, ClientProtocolException, JSONException {
         ///// GENERICS
-        Tracker t1 = new TrackerC("d2pac8zn4o1kva.cloudfront.net", "Tracker Test", "JavaPlow", "com.saggezza", true, true);
+        Tracker t1 = new TrackerC("d2pac8zn4o1kva.cloudfront.net", "javaplow.Tracker Test", "JavaPlow", "com.saggezza", true, true);
 //        t1.track();
         t1.setUserID("User1");
         t1.setLanguage("ital");
