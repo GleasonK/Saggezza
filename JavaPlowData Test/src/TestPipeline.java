@@ -4,7 +4,8 @@
 //Use: Test case scenario for Javaplow tracker
 
 
-import javaplow.*;
+import javaplow.Tracker;
+import javaplow.TrackerC;
 import org.json.JSONException;
 
 import java.io.IOException;
