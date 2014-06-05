@@ -22,6 +22,14 @@ import java.util.LinkedHashMap;
 import java.util.Random;
 import java.util.Set;
 
+/**
+ * PayloadMapC implements the PayloadMap interface
+ *  The PayloadMap is used to store all the parameters and configurations that are used
+ *  to send data via the HTTP GET request.
+ *
+ * @version 0.0.2
+ * @author Kevin Gleason
+ */
 
 public class PayloadMapC implements PayloadMap{
     private LinkedHashMap<String,String> parameters;

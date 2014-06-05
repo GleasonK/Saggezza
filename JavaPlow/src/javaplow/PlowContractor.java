@@ -17,11 +17,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/*
-*  Contractor Class, mostly used to assert preconditions
-*    Contractor to verify preconditions, post conditions and invariants.
-*    Uses data structure to hold custom ID contracts for specific jobs
-*/
+
+/**
+ * Contractor Class
+ * The contractor class is used to create a standard list of assertions that abide by the
+ *  snowplow conventions. This ensures that in the following steps of snowplow data processing
+ *  all information needed will be present.
+ *
+ * Contractor Class, mostly used to assert preconditions
+ *  Contractor to verify preconditions, post conditions and invariants.
+ *  Uses data structure to hold custom ID contracts for specific jobs
+ *
+ * @version 0.0.2
+ * @author Kevin Gleason
+ */
 
 public class PlowContractor<T> {
     //Class variables
@@ -30,9 +39,18 @@ public class PlowContractor<T> {
     //Instance Variables
     private Map<String, Function<T>> customContracts = new HashMap<String, Function<T>>();
 
-    /* Contract Checker
-     *   Checks the preconditions and post conditions depending on how iti s configured
-     *   Can be enabled or disabled as needed with first argument
+    /**
+     * Contract Checker
+     *   Checks the preconditions and post conditions depending on how it is configured
+     *   Can be enabled or disabled as needed with first argument which will be passed by
+     *   the Tracker instance.
+     * @param checkContracts boolean function passed from Tracker instance, if false contracts
+     *                       are turned off and all checks return true.
+     * @param function The name of the function to check. Currently three are implemented
+     *                 and custom functions are allowed.
+     * @param input The input for the function being called and checked if it abides by the
+     *              contract.
+     * @return True or False depending on whether or not the input abides by the rules of the contract.
      */
     public boolean checkContract(boolean checkContracts, Function<T> function, T input){
         boolean goodContract = checkContracts && function.functionCheck(input) || !checkContracts;

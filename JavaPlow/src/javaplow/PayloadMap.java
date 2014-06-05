@@ -19,6 +19,15 @@ import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
+/**
+ * PayloadMap interface
+ *  The PayloadMap is used to store all the parameters and configurations that are used
+ *  to send data via the HTTP GET request.
+ *
+ * @version 0.0.2
+ * @author Kevin Gleason
+ */
+
 //Immutable structure -- Payload will always be a string.
 
 public interface PayloadMap {

@@ -20,6 +20,15 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Tracker Interface
+ * The tracker interface contains all usable tracking commands that are implemented
+ *  in the TrackerC class.
+ *
+ * @version 0.0.2
+ * @author Kevin Gleason
+ */
+
 public interface Tracker {
 
     //Tracking Events
@@ -41,7 +50,6 @@ public interface Tracker {
     //Setters
     public void setContractors(PlowContractor<Integer> integerContractor, PlowContractor<String> stringContractor,
             PlowContractor<Map<String, Object>> dictionaryContractor);
-    public void setPayload(PayloadMap payload);
     public void setParam(String param, String val);
     public void setPlatform(String platform);
     public void setUserID(String userID);
