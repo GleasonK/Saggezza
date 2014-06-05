@@ -52,6 +52,7 @@ public class TrackerC implements Tracker {
     private static final String VERSION = Version.VERSION;
     private static final String DEFAULT_PLATFORM = "pc";
     public static final String DEFAULT_VENDOR = "com.saggezza";
+    public static boolean debug = false;
 
     //Instance Variables
     private PayloadMap payload = new PayloadMapC();
@@ -88,26 +89,24 @@ public class TrackerC implements Tracker {
     }
 
     /**
-     * The basic track command. All other track functions eventually call this.
-     * The function compiles all the parameters in the PayloadMap into a proper
-     * URI which then is made into a HttpGet instance. The GET request is then sent to
-     * the collector URI where it is logged.
+     * {@inheritDoc}
      * @throws URISyntaxException
-     * @throws ClientProtocolException
      * @throws IOException
      */
-    public void track() throws URISyntaxException, ClientProtocolException, IOException{
+    public void track() throws URISyntaxException, IOException{
         URI uri = buildURI("https", collector_uri, "/i");
         this.payload = this.payload.setTimestamp();
-        System.out.println("Payload:\n" + this.payload.toString());
         HttpGet httpGet = makeHttpGet(uri);
-        System.out.println("URI: " + uri);
-        System.out.println("Making HttpGet...");
+        if (debug) {
+            System.out.println("Payload:\n" + this.payload.toString());
+            System.out.println("URI: " + uri);
+            System.out.println("Making HttpGet...");
+        }
         makeRequest(httpGet);
    }
 
     /**
-     * Track a single page view on a java web applications.
+     * {@inheritDoc}
      * @param page_url The url of the page where the tracking call lies.
      * @param page_title The title of the page where the tracking call lies. (optional)
      * @param referrer The one who referred you to the page (optional)
@@ -125,13 +124,12 @@ public class TrackerC implements Tracker {
         }
         else {
             this.payload = this.payload.track_page_view_config(page_url, page_title, referrer, null);
-
         }
         this.track();
     }
 
     /**
-     * Track a structured event. Useful for tracking data transfer and other structured transactions.
+     * {@inheritDoc}
      * @param category The category of the structured event.
      * @param action The action that is being tracked. (optional)
      * @param label A label for the tracking event. (optional)
@@ -139,9 +137,9 @@ public class TrackerC implements Tracker {
      * @param value The value associated with the property being tracked.
      * @param vendor The vendor the the property being tracked. (optional)
      * @param context Additional JSON context for the tracking call (optional)
-     * @throws JSONException If JSON is in improper formatting
-     * @throws URISyntaxException If there is an issue with the tracking call.
-     * @throws IOException If there is an issue with processing the HTTP GET
+     * @throws JSONException
+     * @throws URISyntaxException
+     * @throws IOException
      */
     public void track_struct_event(String category, String action, String label, String property,
                                    int value, String vendor, String context)
@@ -161,14 +159,14 @@ public class TrackerC implements Tracker {
     }
 
     /**
-     * Track an unstructured event.
+     * {@inheritDoc}
      * @param eventVendor The vendor the the event information.
      * @param eventName A name for the unstructured event being tracked.
      * @param dictInfo The unstructured information being tracked in dictionary form.
      * @param context Additional JSON context for the tracking call (optional)
-     * @throws JSONException If JSON is in improper formatting
-     * @throws IOException If there is an issue with the tracking call.
-     * @throws URISyntaxException If there is an issue with processing the HTTP GET
+     * @throws JSONException
+     * @throws IOException
+     * @throws URISyntaxException
      */
     public void track_unstruct_event(String eventVendor, String eventName, String dictInfo, String context)
             throws JSONException, IOException, URISyntaxException{
@@ -186,7 +184,7 @@ public class TrackerC implements Tracker {
     }
 
     /**
-     * Track a screen view
+     * {@inheritDoc}
      * @param name The name of the screen view being tracked
      * @param id The ID of the screen view being tracked.
      * @param context Additional JSON context for the tracking call (optional)
@@ -204,8 +202,7 @@ public class TrackerC implements Tracker {
     }
 
     /**
-     * Track and ecommerce transaction item. Not usually called alone, but called for each
-     * individual item of the ecommerce transaction function.
+     * {@inheritDoc}
      * @param order_id ID of the item.
      * @param sku SKU value of the item.
      * @param price Prive of the item.
@@ -236,9 +233,7 @@ public class TrackerC implements Tracker {
     }
 
     /**
-     * Track an Ecommerce Transaction
-     * Option to provide a Map of only strings of items in the transaction which can be used
-     * to track each individual ecommerce transaction item
+     * {@inheritDoc}
      * @param order_id The transaction ID, will be generated if left null
      * @param total_value The total value of the transaction.
      * @param affiliation Affiliations to the transaction (optional)
@@ -257,7 +252,7 @@ public class TrackerC implements Tracker {
      */
     public void track_ecommerce_transaction(String order_id, Double total_value, String affiliation, Double tax_value,
             Double shipping, String city, String state, String country, String currency, List<Map<String,String>> items, String context)
-            throws JSONException, UnsupportedEncodingException, IOException, URISyntaxException{
+            throws JSONException, IOException, URISyntaxException{
         assert this.stringContractor.checkContract(this.contracts, PlowContractor.non_empty_string, order_id);
         //Track ecommerce event.
         if (context != null && !context.equals("")) {
@@ -329,9 +324,11 @@ public class TrackerC implements Tracker {
             throw new Error("HTTP Error - Error code " + statusCode);
         }
         try{
-            Header[] headers = response.getAllHeaders();
-            for (Header h : headers)
-                System.out.println(h.toString()); //DEBUG
+            if (debug) {
+                Header[] headers = response.getAllHeaders();
+                for (Header h : headers)
+                    System.out.println(h.toString());
+            }
         }
         finally {
             response.close();
@@ -362,9 +359,7 @@ public class TrackerC implements Tracker {
     }
 
     /**
-     * Set Contractors
-     *  Not required, but useful if you want to make a contractor with a custom checker for processing.
-     *  Requires three inputs, a contractor class of each type.
+     * {@inheritDoc}
      * @param integerContractor A contractor of type integer.
      * @param stringContractor A contractory of type String
      * @param dictionaryContractor A Contractor of type Map with key value of String, Object
@@ -388,8 +383,7 @@ public class TrackerC implements Tracker {
     }
 
     /**
-     * Used to add custom parameter. Be careful with use, must abide by snowplow table standards.
-     * See snowplow documentation
+     * {@inheritDoc}
      * @param param Parameter to be set.
      * @param val Value for the parameter.
      */
@@ -398,8 +392,7 @@ public class TrackerC implements Tracker {
     }
 
     /**
-     * Set the platform for the tracking instance. (optional)
-     * The default platform is PC.
+     * {@inheritDoc}
      * @param platform The platform being tracked, currently supports "pc", "tv", "mob", "cnsl", and "iot".
      */
     public void setPlatform(String platform){//contract true
@@ -408,7 +401,7 @@ public class TrackerC implements Tracker {
     }
 
     /**
-     * Set the uesrID parameter (optional)
+     * {@inheritDoc}
      * @param userID The User ID String.
      */
     public void setUserID(String userID){
@@ -417,7 +410,7 @@ public class TrackerC implements Tracker {
     }
 
     /**
-     * Set the screen resolution width and height (optional)
+     * {@inheritDoc}
      * @param width Width of the screen in pixels.
      * @param height Height of the screen in pixels.
      */
@@ -428,7 +421,7 @@ public class TrackerC implements Tracker {
     }
 
     /**
-     * Set the viewport of the screen.
+     * {@inheritDoc}
      * @param width Width of the viewport in pixels.
      * @param height Height of the viewport in pixels.
      */
@@ -439,7 +432,7 @@ public class TrackerC implements Tracker {
     }
 
     /**
-     * Set the color depth (optional)
+     * {@inheritDoc}
      * @param depth Depth of the color.
      */
     public void setColorDepth(int depth){
@@ -448,7 +441,7 @@ public class TrackerC implements Tracker {
     }
 
     /**
-     * Set the timezone (optioanl)
+     * {@inheritDoc}
      * @param timezone Timezone where tracking takes place.
      */
     public void setTimezone(String timezone){
@@ -457,7 +450,7 @@ public class TrackerC implements Tracker {
     }
 
     /**
-     * Set the language (optional)
+     * {@inheritDoc}
      * @param language Language for info tracked.
      */
     public void setLanguage(String language){
@@ -466,8 +459,8 @@ public class TrackerC implements Tracker {
     }
 
     /**
-     * Get the payload, use if you want to understand how it is set up.
-     * @return Returns the payload, can be used with caution to customize parameters.
+     * {@inheritDoc}
+     * @return
      */
     public PayloadMap getPayload(){ return this.payload; }
 
