@@ -36,6 +36,7 @@ public class TrackerC implements Tracker {
     private static final String VERSION = Version.VERSION;
     private static final String DEFAULT_PLATFORM = "pc";
     public static final String DEFAULT_VENDOR = "com.saggezza";
+    public static boolean debug = false;
 
     //Instance Variables
     private PayloadMap payload = new PayloadMapC();
@@ -54,7 +55,7 @@ public class TrackerC implements Tracker {
     public TrackerC(String collector_uri, String namespace) {
         this.collector_uri = (collector_uri);
         this.namespace = namespace;
-        this.app_id = this.context_vendor = null;
+        this.app_id = this.context_vendor = "";
         this.base64_encode = this.contracts = true;
         this.setPayload(new PayloadMapC());
     }
@@ -78,10 +79,12 @@ public class TrackerC implements Tracker {
     public void track() throws URISyntaxException, ClientProtocolException, IOException{
         URI uri = buildURI("https", collector_uri, "/i");
         this.payload = this.payload.setTimestamp();
-        System.out.println("Payload:\n" + this.payload.toString());
         HttpGet httpGet = makeHttpGet(uri);
-        System.out.println("URI: " + uri);
-        System.out.println("Making HttpGet...");
+        if (debug) {
+            System.out.println(this.payload.toString());
+            System.out.println("URI: " + uri);
+            System.out.println("Making HttpGet...");
+        }
         makeRequest(httpGet);
     }
 
@@ -231,9 +234,11 @@ public class TrackerC implements Tracker {
             throw new Error("HTTP Error - Error code " + statusCode);
         }
         try{
-            Header[] headers = response.getAllHeaders();
-            for (Header h : headers)
-                System.out.println(h.toString()); //DEBUG
+            if (debug=true) {
+                Header[] headers = response.getAllHeaders();
+                for (Header h : headers)
+                    System.out.println(h.toString()); //DEBUG
+            }
         }
         finally {
             response.close();
@@ -287,7 +292,7 @@ public class TrackerC implements Tracker {
 
     //Only called once when the Payload class is attacked to the javaplow.Tracker
     private void setStandardNV(){
-        this.payload = this.payload.add_standard_nv_pairs(DEFAULT_PLATFORM, VERSION, this.namespace, "");
+        this.payload = this.payload.add_standard_nv_pairs(DEFAULT_PLATFORM, VERSION, this.namespace, this.app_id);
     }
 
     // Set a generic parameter - maybe not needed if using table, maybe unstructured
