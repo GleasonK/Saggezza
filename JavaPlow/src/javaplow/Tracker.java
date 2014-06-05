@@ -1,7 +1,15 @@
-// File: javaplow.Tracker.java
-// Author: Kevin Gleason
-// Date: 5/28/14
-// Use: The tracker interface for javaplow.TrackerC
+/*
+ * Copyright (c) 2012-2014 Snowplow Analytics Ltd. All rights reserved.
+ *
+ * This program is licensed to you under the Apache License Version 2.0,
+ * and you may not use this file except in compliance with the Apache License Version 2.0.
+ * You may obtain a copy of the Apache License Version 2.0 at http://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the Apache License Version 2.0 is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
+ */
 
 package javaplow;
 
@@ -19,7 +27,7 @@ public interface Tracker {
     public void track_page_view(String page_url, String page_title, String referrer, String context)
             throws IOException, URISyntaxException, JSONException;
     public void track_struct_event(String category, String action, String label, String property,
-            int value, String vendor, String context)throws JSONException, URISyntaxException, IOException;
+            int value, String vendor, String context) throws JSONException, URISyntaxException, IOException;
     public void track_unstruct_event(String eventVendor, String eventName, String dictInfo, String context)
             throws JSONException, IOException, URISyntaxException;
     public void track_screen_view(String name, String id, String context)
