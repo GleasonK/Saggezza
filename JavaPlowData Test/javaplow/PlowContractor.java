@@ -100,7 +100,7 @@ public class PlowContractor<T> {
         PlowContractor<Integer> integerContractor = new PlowContractor<Integer>();
 
         //Able to make custom contracts like so
-        PlowContractor.Function<String> string_is_long = new PlowContractor.Function<String>() {
+        Function<String> string_is_long = new Function<String>() {
             public boolean functionCheck(String input){
                 return !input.isEmpty() && input.length() > 10;
             }
