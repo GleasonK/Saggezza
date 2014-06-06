@@ -318,8 +318,6 @@ public class PayloadMapC implements PayloadMap{
         return tmp;
     }
 
-
-
     /* Getter functions.
      *  Can be used to get key sets of parameters and configurations
      *  Also used to get the linked hash maps of the parameters and configurations

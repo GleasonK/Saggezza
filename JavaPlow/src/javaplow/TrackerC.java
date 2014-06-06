@@ -13,7 +13,9 @@
 
 package javaplow;
 
-import org.apache.http.*;
+import org.apache.http.Header;
+import org.apache.http.HeaderIterator;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -103,6 +105,7 @@ public class TrackerC implements Tracker {
             System.out.println("Making HttpGet...");
         }
         makeRequest(httpGet);
+        this.clearPayload();
    }
 
     /**
@@ -340,6 +343,17 @@ public class TrackerC implements Tracker {
         return new JSONObject(jsonStr);
     }
 
+    //Clear Payload for next iterations
+    private void clearPayload() {
+        String[] standards = new String[] {"uid", "res", "vp", "cd", "tz", "lang"};
+        PayloadMap standPairs = new PayloadMapC();
+        Map<String, String> currentParam = this.payload.getParams();
+        for (String s : standards)
+            if (currentParam.containsKey(s))
+                standPairs.add(s, currentParam.get(s));
+        this.setPayload(standPairs);
+    }
+
     //View all headers on an HttpResponse
     private List<Object> viewHeaders(HttpResponse response) {
         HeaderIterator hi = response.headerIterator();
@@ -480,16 +494,17 @@ public class TrackerC implements Tracker {
         items.put("sku", "SKUVAL"); items.put("quantity","2"); items.put("price","19.99");
         List<Map<String,String>> lst = new LinkedList<Map<String, String>>();
         lst.add(items);
+        TrackerC.debug=true;
 
         /////TRACK TEST
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 2; i++) {
 //            t1.track();
             try { Thread.sleep(2000); }
             catch (InterruptedException e){}
             System.out.println("Loop " + i);
             String dict = "{'Iteration Number':'" + i + "'}";
-//            t1.track_unstruct_event("Lube Insights", "Data Loop", dict, context);
-//            t1.track_struct_event("Items", "Stuff", "Pants", "Green Blue", 3, DEFAULT_VENDOR, context);
+            t1.track_unstruct_event("Lube Insights", "Data Loop", dict, context);
+            t1.track_struct_event("Items", "Stuff", "Pants", "Green Blue", 3, DEFAULT_VENDOR, context);
 //            t1.track_page_view("www.saggezza.com", "Saggezza Home", "Kevin Gleason", null);
 //            t1.track_ecommerce_transaction_item("IT1023", "SKUVAL", 29.99, 2, "boots", "Shoes","USD",null,null);
             t1.track_ecommerce_transaction("OID", 19.99, "Kohls", 2.50, 1.99, "Chagrin", "OH", "USA", "USD", lst, context);

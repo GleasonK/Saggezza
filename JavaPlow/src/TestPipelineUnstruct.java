@@ -4,15 +4,12 @@
 //Use: Test case scenario for Javaplow tracker
 
 
-import javaplow.*;
-import javaplow.TrackerC;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Random;
 
 // Nothing to do with a node, just simulating random numbers and data
 
@@ -24,7 +21,7 @@ public class TestPipelineUnstruct {
     private String node_id;
 
     TestPipelineUnstruct(String node_id){
-        this.t1 = new TrackerC("d2pac8zn4o1kva.cloudfront.net", "Data Pipeline MW01 Success and CPU",
+        this.t1 = new TrackerC("d2pac8zn4o1kva.cloudfront.net", "Data Pipeline MW03 Struct and Unstruct",
                 node_id, "com.saggezza", true, true);
         this.SUCCESS_RATE = getPercent() + 25.0;
         this.NODE_POWER = getPercent() - 45.0;
@@ -38,6 +35,8 @@ public class TestPipelineUnstruct {
             double CPU = getUsageCPU();
             boolean succeeded = succeedOrFail(CPU);
             t1.track_unstruct_event("Saggezza", "Pipeline Statistics", buildInfo(CPU, succeeded, i), context);
+            t1.track_struct_event("Pipeline Work", "Node Processing","Succeed and CPU", succeeded ? "OK" : "FAILED",
+                    (int) CPU,"com.saggezza",context);
             try { Thread.sleep(200 * getRandIntZeroToN(10)); }
             catch (InterruptedException e){}
         }
@@ -93,11 +92,11 @@ public class TestPipelineUnstruct {
         System.out.println(p4.toString());
         System.out.println(p5.toString());
 
-        p1.runNodeIterations(20);
-        p2.runNodeIterations(20);
-        p3.runNodeIterations(20);
-        p4.runNodeIterations(20);
-        p5.runNodeIterations(20);
+        p1.runNodeIterations(10);
+        p2.runNodeIterations(10);
+        p3.runNodeIterations(10);
+        p4.runNodeIterations(10);
+        p5.runNodeIterations(10);
 
     }
 }

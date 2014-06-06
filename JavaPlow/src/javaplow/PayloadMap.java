@@ -13,7 +13,7 @@
 
 package javaplow;
 
-import org.json.*;
+import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashMap;
