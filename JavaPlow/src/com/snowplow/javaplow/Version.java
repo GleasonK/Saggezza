@@ -22,7 +22,7 @@ package com.snowplow.javaplow;
  */
 
 public class Version {
-    static final String VERSION = "0.0.2";
+    static final String VERSION = "0.1.0";
 }
 /**
  * JavaPlow com.snowplow.javaplow.Tracker
