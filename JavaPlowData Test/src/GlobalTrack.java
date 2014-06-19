@@ -1,5 +1,4 @@
-import javaplow.Tracker;
-import javaplow.TrackerC;
+import com.snowplow.javaplow.*;
 
 /**
  * Created by Kevin Gleason on 6/6/2014.

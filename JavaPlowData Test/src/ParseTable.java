@@ -1,12 +1,10 @@
-import javaplow.Tracker;
-
+import com.snowplow.javaplow.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import javaplow.*;
 import org.json.JSONException;
 
 /**

@@ -1,4 +1,4 @@
-import javaplow.TrackerC;
+import com.snowplow.javaplow.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
