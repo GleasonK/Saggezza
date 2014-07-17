@@ -97,7 +97,11 @@ public class JavaPlowLogger extends HttpServlet {
             String queryString = request.getQueryString();
             boolean singleVar = queryString.contains("%2C") && queryString.contains("%3D");
             File logFile;
-            if (singleVar) { logFile = new File(localPath + "single/" + timeLog);}
+
+            if (singleVar) {
+                logFile = new File(localPath + "single/" + timeLog);
+                queryString = addSingleVar(request);
+            }
             else { logFile = new File(localPath + "raw/" + timeLog); }
             writer = new BufferedWriter(new FileWriter(logFile));
             writer.write(queryString);
@@ -108,13 +112,13 @@ public class JavaPlowLogger extends HttpServlet {
                 File logFileClean = new File(localPath + "clean/" + timeLog + ".html");
                 writer = new BufferedWriter(new FileWriter(logFileClean));
                 writer.write("<table style = \"border:1px solid black\"><tr><th style = \"border:1px solid black\">Param</th><th style = \"border:1px solid black\">Value</th></tr>");
+                for (Map.Entry<String, String[]> entry : getBufferMap(request).entrySet()) {
+                    if (entry.getKey().equals("cx") || entry.getKey().equals("ue_px"))
+                        entry.setValue(new String[]{base64Decode(entry.getValue()[0])});
+                    writer.write("<tr><td style = \"border:1px solid black\">" + checkKey(entry.getKey()) + "</td><td style = \"border:1px solid black\">" + entry.getValue()[0] + "</td></tr>");
+                }
+                writer.write("</table>");
             }
-            for (Map.Entry<String, String[]> entry : getBufferMap(request).entrySet()) {
-                if (entry.getKey().equals("cx") || entry.getKey().equals("ue_px"))
-                    entry.setValue(new String[] {base64Decode(entry.getValue()[0])});
-                writer.write("<tr><td style = \"border:1px solid black\">" + checkKey(entry.getKey()) + "</td><td style = \"border:1px solid black\">" + entry.getValue()[0] + "</td></tr>");
-            }
-            writer.write("</table>");
 
             //Set path for return
             path = logFile.getCanonicalPath();
@@ -138,6 +142,19 @@ public class JavaPlowLogger extends HttpServlet {
         Base64 base = new Base64();
         byte[] output = base.decode(input.getBytes());
         return new String(output);
+    }
+
+    private String addSingleVar(HttpServletRequest request){
+        String queryString = request.getQueryString();
+        String comma = "%2C"; String equals = "%3D";
+        Timestamp collector_tstamp = new Timestamp(System.currentTimeMillis());
+        Map<String,String> params = new HashMap<String, String>();
+        params.put("ctstamp", collector_tstamp.toString());
+        params.put("uip", request.getRemoteAddr());
+        for (Map.Entry<String, String> entry : params.entrySet()){
+            queryString += comma + entry.getKey() + equals + entry.getValue();
+        }
+        return queryString;
     }
 
     /**
@@ -185,6 +202,7 @@ public class JavaPlowLogger extends HttpServlet {
         Timestamp collector_tstamp = new Timestamp(coll_date.getTime());
         Map<String,String[]> params = new HashMap<String, String[]>();
         params.put("ctstamp", new String[]{collector_tstamp.toString()});
+        params.put("uip",new String[] {request.getRemoteAddr()});
 //        params.putAll(geoData(request.getRemoteAddr()));
         params.putAll(request.getParameterMap());
         System.out.println(params.toString());
