@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by saggezza on 7/2/14.
  */
@@ -8,15 +5,6 @@ public class ParseLS {
     public static void showArray(String[] sarr){
         for (String i : sarr)
             System.out.print(i + ",");
-    }
-
-    public static List<String> makeRecord(String rec){
-        List<String> recArray = new ArrayList<String>();
-        String[] recSplit = rec.split("%2C");
-        for (String s : recSplit) {
-            recArray.add(s);
-        }
-        return recArray;
     }
 
     public static void main(String[] args) {
