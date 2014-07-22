@@ -19,4 +19,5 @@ target/
 
 # Java
 *.class
+*.jar
 Pages/

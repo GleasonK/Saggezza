@@ -1,0 +1,7 @@
+#!/bin/bash
+
+i=0
+for x in *;
+do i=$[$i+1];
+done;
+echo $i file\(s\) in current directory;

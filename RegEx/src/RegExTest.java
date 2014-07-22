@@ -12,10 +12,17 @@ public class RegExTest {
         return m;
     }
 
+    public boolean matchMe(String s, Pattern p){
+        Matcher m = p.matcher(s);
+        return m.find();
+    }
+
     public static void main(String[] args){
         RegExTest ret = new RegExTest();
         String b = ret.simpleMatchABCE("abc").toString();
         System.out.println(b);
+        boolean matched = ret.matchMe("H", Pattern.compile("^$"));
+        System.out.println(matched);
     }
 
 }
