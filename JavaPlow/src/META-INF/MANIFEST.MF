@@ -1,0 +1,9 @@
+<<<<<<< HEAD
+Manifest-Version: 1.0
+Main-Class: com.saggezza.javaplow.enrich.Enrich
+
+=======
+Manifest-Version: 1.0
+Main-Class: com.snowplow.javaplow.TrackerC
+
+>>>>>>> 2a23b710350b7bcc7753da4bc9ca6f2644cf3f5d
