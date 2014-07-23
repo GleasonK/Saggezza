@@ -6,7 +6,11 @@
 
 import org.json.JSONException;
 import org.json.JSONObject;
+<<<<<<< HEAD
 import javaplow.*;
+=======
+import com.snowplow.javaplow.*;
+>>>>>>> bad74a14a7c133ed9aa6c94dd0feb0a9dbcf200f
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Random;

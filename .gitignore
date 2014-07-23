@@ -3,6 +3,7 @@
 .idea/
 *.iml
 *.iws
+out/
 
 # Eclipse
 .classpath
@@ -17,5 +18,6 @@ log/
 target/
 
 # Java
-
+*.class
+*.jar
 Pages/

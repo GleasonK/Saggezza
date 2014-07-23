@@ -1,0 +1,22 @@
+173678924 HadoopTest/out/artifacts/HadoopTest_jar/HadoopTest.jar
+30167713 TomcatTest/Geo Data/GeoCity.mmdb
+17645802 TomcatTest/Geo Data/GeoLiteCity.dat
+17645802 JavaPlowCat/Geo Data/GeoLiteCity.dat
+8660119 TomcatTest/Geo Data/GeoCountry-Blocks.csv
+6354566 TomcatTest/Geo Data/GeoCity-Locations.dat
+4455414 JavaPlow/out/artifacts/JavaPlow_jar/JavaPlow.jar
+2222428 JavaPlow/JavaPlow-0.0.2-jar/JavaPlow.jar
+1805797 TomcatTest/out/artifacts/TomcatTest_jar/TomcatTest.jar
+1741870 TomcatTest/Geo Data/GeoCountry.mmdb
+173678924 HadoopTest/out/artifacts/HadoopTest_jar/HadoopTest.jar
+30167713 TomcatTest/Geo Data/GeoCity.mmdb
+17645802 TomcatTest/Geo Data/GeoLiteCity.dat
+17645802 JavaPlowCat/Geo Data/GeoLiteCity.dat
+8660119 TomcatTest/Geo Data/GeoCountry-Blocks.csv
+6354566 TomcatTest/Geo Data/GeoCity-Locations.dat
+4455414 JavaPlow/out/artifacts/JavaPlow_jar/JavaPlow.jar
+4446645 JavaPlow/JavaPlow_jar/JavaPlow.jar
+2222428 JavaPlow/JavaPlow-0.0.2-jar/JavaPlow.jar
+1805797 TomcatTest/out/artifacts/TomcatTest_jar/TomcatTest.jar
+1741870 TomcatTest/Geo Data/GeoCountry.mmdb
+4 JavaPlow

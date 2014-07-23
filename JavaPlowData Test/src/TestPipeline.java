@@ -4,7 +4,12 @@
 //Use: Test case scenario for Javaplow tracker
 
 
+<<<<<<< HEAD
 import javaplow.Tracker;import javaplow.TrackerC;import org.json.JSONException;
+=======
+import com.snowplow.javaplow.*;
+import org.json.JSONException;
+>>>>>>> bad74a14a7c133ed9aa6c94dd0feb0a9dbcf200f
 
 import java.io.IOException;
 import java.lang.InterruptedException;import java.lang.String;import java.lang.System;import java.lang.Thread;import java.net.URISyntaxException;

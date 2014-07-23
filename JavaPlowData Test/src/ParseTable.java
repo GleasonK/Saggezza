@@ -1,12 +1,19 @@
+<<<<<<< HEAD
 import javaplow.Tracker;
 
+=======
+import com.snowplow.javaplow.*;
+>>>>>>> bad74a14a7c133ed9aa6c94dd0feb0a9dbcf200f
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+<<<<<<< HEAD
 import javaplow.*;
+=======
+>>>>>>> bad74a14a7c133ed9aa6c94dd0feb0a9dbcf200f
 import org.json.JSONException;
 
 /**

@@ -1,0 +1,3 @@
+grep: bin: Is a directory
+grep: GitFix: Is a directory
+grep: Test: Is a directory

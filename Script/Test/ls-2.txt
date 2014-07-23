@@ -1,0 +1,6 @@
+bin
+GitFix
+grep-error.txt
+ls-2.txt
+ls.txt
+Test
