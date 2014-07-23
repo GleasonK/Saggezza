@@ -1,0 +1,1 @@
+echo sudo -u hdfs hadoop fs

@@ -1,0 +1,5 @@
+total 12
+drwxrwxr-x 2 saggezza saggezza 4096 Jul 22 17:04 bin
+drwxrwxr-x 2 saggezza saggezza 4096 Jul 22 16:22 GitFix
+-rw-rw-r-- 1 saggezza saggezza    0 Jul 23 11:16 ls.txt
+drwxrwxr-x 2 saggezza saggezza 4096 Jul 23 11:16 Test
