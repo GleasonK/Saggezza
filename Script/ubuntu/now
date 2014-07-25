@@ -1,0 +1,5 @@
+#!/bin/bash
+now=date
+echo $($now +"%A")
+echo $($now +"%B %d, %G")
+echo $($now +"%l:%M:%S.%3N %p")

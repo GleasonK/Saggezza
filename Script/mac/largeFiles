@@ -1,0 +1,119 @@
+#!/bin/bash
+package=largeFiles
+
+method=a
+loc="."
+num=10
+recurse=10
+
+doDU(){
+	if [[ -z "$size" ]]; then
+		echo du -d "$recurse"
+	else
+		echo du -d "$recurse" -$size
+	fi
+}
+
+while test $# -gt 0; do
+	case "$1" in
+		-h|--help)
+			echo "$package - Find the large files in a directory."
+			echo " "
+			echo "$package [options] [location] [num items]"
+			echo " "
+			echo "options:"
+			echo "	-h, --help	show brief description of package."
+			echo "	-d 	 	limit search queries to directories."
+			echo "	-f 		limit search queries to files specifically."
+			echo "	-l 		location to search for large files"
+			echo "	-n 		number of files for return"
+			echo "	-r 		depth to recurse through folders."
+			echo "	-s 		byte size for display"
+			echo " "
+			echo "location"
+			echo "	Folder to search for large files." 
+			echo "	Default '.'"
+			echo " "
+			echo "num items"
+			echo "	The number of items to be listed in result."
+			echo "	Default 10"
+			echo " "
+			echo "SIZE format options are k, m, g, t, P, E, Z, Y"
+			exit 0
+			;;
+		-d)
+			method=d
+			shift
+			;;
+		-f)
+			method=f
+			shift
+			;;
+		-l)
+			shift
+			if test $# -gt 0; then
+				loc=$1
+			else
+				echo "No location specified"
+				exit 1;
+			fi
+			shift
+			;;
+		-n)
+			shift
+			if test $# -gt 0; then
+				num=$1
+			else
+				echo "No number specified"
+				exit 1;
+			fi
+			shift
+			;;
+		-r)
+			shift
+			if test $# -gt 0; then
+				recurse=$1
+			else
+				echo "No recursive depth specified"
+				exit 1;
+			fi
+			shift
+			;;
+		-s)
+			shift
+			if test $# -gt 0; then
+				size=$1
+			else
+				echo "No size specified"
+				exit 1;
+			fi
+			shift
+			;;
+		*)
+			break
+			;;
+	esac
+done;
+
+if [[ -n "$1" ]]; then
+	loc=$1
+fi
+if [[ -n "$2" ]]; then
+	echo "$num"
+	num=$2
+fi
+case "$method" in
+	a)
+		`doDU` $loc | sort -n -r | head -n $num
+		;;
+	d)
+		find $loc -maxdepth $recurse -type d | `doDU` | sort -n -r | head -n $num
+		;;
+	f)
+		find $loc -maxdepth $recurse -type f -exec `doDU` {} \; | sort -n -r | head -n $num
+		;;
+	*)
+		echo "Not a valid method"
+		exit 1;
+		;;
+esac
