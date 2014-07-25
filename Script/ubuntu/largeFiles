@@ -7,11 +7,13 @@ num=10
 recurse=10
 
 doDU(){
-	if [[ -z "$size" ]]; then
-		echo du -d "$recurse"
-	else
-		echo du -d "$recurse" -B$size
+	args=("-d" "$recurse")
+	queryString="-d $recurse"
+	if [[ -n "$size" ]]; then
+		args+=("-B" "$size")
 	fi
+	
+	echo du "${args[@]}"
 }
 
 while test $# -gt 0; do
@@ -99,12 +101,11 @@ if [[ -n "$1" ]]; then
 	loc=$1
 fi
 if [[ -n "$2" ]]; then
-	echo "$num"
 	num=$2
 fi
 case "$method" in
 	a)
-		`doDU` $loc | sort -n -r | head -n $num
+		`doDU` -a $loc | sort -n -r | head -n $num
 		;;
 	d)
 		find $loc -type d | `doDU` | sort -n -r | head -n $num

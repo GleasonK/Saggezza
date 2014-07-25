@@ -1,0 +1,130 @@
+#!/bin/bash
+package=batchRename
+verbose=false
+keepExt=false
+inc=0
+
+makeFileName(){
+	##fname = prefix + fname + suffix
+	##if prefix || suffix are set and increment!= true, no increment
+	fname=$1
+	extension="${fname##*.}"
+	fname="${fname%.*}"
+	
+	if [[ -n "$basename" ]]; then
+		fname="$basename"
+	fi
+	if [[ -n "$prefix" ]]; then
+		fname="$prefix$fname"
+	fi
+	if [[ -n "$suffix" ]]; then
+		fname="$fname$suffix"
+	fi
+	if ([[ -n "$prefix$suffix" ]] && [[ -n "$increment" ]]) || 
+		[[ -n "$basename" ]] || 
+		[[ -z "$prefix$suffix" ]]; then
+		printf -v num '%04d' $inc
+		fname="${fname}_${num}"
+		((inc++))
+	fi
+	if [[ $keepExt == true ]]; then
+		fname="$fname.$extension"
+	fi
+}
+
+while test $# -gt 0; do
+	case "$1" in
+		-h|--help)
+			echo "$package - Batch rename a group of files."
+			echo " "
+			echo "$package [options] files*"
+			echo " "
+			echo "options:"
+			echo "	-h, --help	show brief description of package."
+			echo "	-e 		maintain file extension"
+			echo "	-i 		use an incremental count for rename."
+			echo "	-b [basename]	full rename of input files"
+			echo "	-p [prefix] 	add prefix to input files."
+			echo "	-s [suffix] 	add suffix to input files"
+			echo "	-v 		verbose move."
+			echo " "
+			echo "name"
+			echo "	The new base name for all files." 
+			echo " "
+			echo "prefix/suffix"
+			echo "	String of alphanumerics to add before or after files."
+			echo " "
+			echo "Default is incremental suffix rename"
+			exit 0
+			;;
+		-b)
+			shift
+			if test $# -gt 0; then
+				basename=$1
+			else
+				echo "No base name specified"
+				exit 1;
+			fi
+			shift
+			;;
+		-e)
+			keepExt=true
+			shift
+			;;
+		-i)
+			shift
+			increment=true
+			if test $# -gt 0; then
+				zeros=%$1
+			else
+				echo "No zero padding specified"
+				exit 1;
+			fi
+			shift
+			;;
+		-p)
+			shift
+			if test $# -gt 0; then
+				prefix=$1
+			else
+				echo "No prefix specified"
+				exit 1;
+			fi
+			shift
+			;;
+		-s)
+			shift
+			if test $# -gt 0; then
+				suffix=$1
+			else
+				echo "No suffix specified"
+				exit 1;
+			fi
+			shift
+			;;
+		-v)
+			shift
+			verbose=true
+			;;
+		*)
+			break
+			;;
+	esac
+done;
+
+for file in "$@"
+do
+	makeFileName "$file"
+	if [[ -z "$proceed" ]]; then
+		echo "$file -> $fname"
+		read -p "Is this format ok? (y/N) " proceed
+	fi
+	if [[ "$proceed" != [Yy] ]]; then
+		echo "Quitting"
+		exit 1;
+	fi
+	if [[ $verbose == true ]]; then
+		echo "$file -> $fname"
+	fi
+	mv "$file" "$fname"
+done
