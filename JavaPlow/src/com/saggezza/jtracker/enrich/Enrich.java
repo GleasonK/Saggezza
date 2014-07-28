@@ -1,4 +1,4 @@
-package com.saggezza.javaplow.enrich;
+package com.saggezza.jtracker.enrich;
 
 import org.apache.commons.codec.binary.Base64;
 import java.util.ArrayList;
@@ -11,19 +11,19 @@ import java.util.List;
  *   future version.</p>
  * <p>Do not allow data tracked to contain commas, will throw off the CSV</p>
  * @author Kevin Gleason
- * @version 0.0.1
+ * @version 0.0.2
  */
 public class Enrich {
 
     public Enrich(){}
 
-    public String enrich(String record) {
+    public String enrich(ArrayList<String> record) {
         //String[] to Array, then run through record finding index and inserting per record.
-        List<String> LIrecord = getSampleRecord(record);
-        String newRec = LIrecord.toString().replace(", ",",");
-        System.out.println(newRec.substring(1,newRec.length()-1));
-        List<String> newRecord = getRecordArray();
-        for (String s : LIrecord){
+//        List<String> LIrecord = getSampleRecord(record);
+//        String newRec = LIrecord.toString().replace(", ",",");
+//        System.out.println(newRec.substring(1,newRec.length()-1));
+        ArrayList<String> newRecord = getRecordArray();
+        for (String s : record){
             String[] data = s.split("=");
             int pos = FatFormat.getIndex(data[0]);
             //Currently toss out records that dont conform to standards. Error thrown by FatFormat.getIndex as it is.
@@ -48,8 +48,8 @@ public class Enrich {
      * Makes an array that is the size of the fat table, populated with empty spaces for insertion.
      * @return The array with 103 items
      */
-    private List<String> getRecordArray(){
-        List<String> recordArray = new ArrayList<String>(103);
+    private ArrayList<String> getRecordArray(){
+        ArrayList<String> recordArray = new ArrayList<String>(103);
         for (int i=0; i<103; i++)
             recordArray.add("");
         return recordArray;
@@ -93,8 +93,8 @@ public class Enrich {
                 "ue_na=Pipeline+Statistics&evn=Saggezza&ue_px=eyJTdGF0dXMiOiJPSyIsIkl0ZXJhdGlvbiI6MywiQ1BVIjo4MH0%3D&" +
                 "cx=eyJEYXRhIFdvcmsgSUQiOiJLR2kgMDAyIiwiQ29tcGFueSI6IktldmluRyBpbmMuIn0%3D";
         Enrich e = new Enrich();
-        String data = e.enrich(sampleRecord);
-        System.out.println("NEW RECORD:\n" + data.replace("+"," "));
+//        String data = e.enrich(sampleRecord);
+//        System.out.println("NEW RECORD:\n" + data.replace("+"," "));
     }
 
 }

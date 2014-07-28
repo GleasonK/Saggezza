@@ -11,7 +11,7 @@
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
  */
 
-package com.saggezza.javaplow.track;
+package com.saggezza.jtracker.track;
 
 import org.apache.http.Header;
 import org.apache.http.client.ClientProtocolException;
@@ -38,7 +38,7 @@ import java.util.*;
  *
  *  <p><b>To use:</b></p>
  *  <ul>
- *      <li>Import the com.saggezza.javaplow package</li>
+ *      <li>Import the com.saggezza.jtracker package</li>
  *      <li>You must first declare a payload and a tracker</li>
  *      <li>Tracker will instantiate with a good-for-tracking payload</li>
  *      <li>(recommended) Build the payload identity with TrackerC set functions (e.g setUser(String user))</li>
@@ -54,7 +54,7 @@ import java.util.*;
  *      sending logs to your S3 bucket, put `TrackerC.track = false` in your code.</li>
  *    <li>Default values are `TrackerC.debug = false` and `TrackerC.track = true`</li>
  *  </ul>
- *  @version 0.1.0
+ *  @version 0.2.0
  *  @author Kevin Gleason
  */
 
@@ -472,7 +472,7 @@ public class TrackerC implements Tracker, GenericTracker {
         setStandardNV();
     }
 
-    //Only called once when the Payload class is attacked to the com.saggezza.javaplow.track.Tracker
+    //Only called once when the Payload class is attacked to the com.saggezza.jtracker.track.Tracker
     private void setStandardNV(){
         this.payload = this.payload.addStandardNVPairs(DEFAULT_PLATFORM, VERSION, this.namespace, this.app_id);
     }

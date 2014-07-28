@@ -1,10 +1,9 @@
-package com.saggezza.javaplow.track;
+package com.saggezza.jtracker.track;
 
 import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Map;
 
 
@@ -17,7 +16,7 @@ import java.util.Map;
  * TODO: Add fields to track_generic.
  *  {@inheritDoc}
  * @see TrackerC
- * @version 0.1.0
+ * @version 0.2.0
  * @author Kevin Gleason
  */
 public interface GenericTracker {

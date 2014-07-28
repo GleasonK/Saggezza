@@ -5,6 +5,8 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import com.saggezza.javaplow.enrich.Enrich;
+
 import com.maxmind.geoip.*;
 
 import org.apache.commons.codec.binary.Base64;

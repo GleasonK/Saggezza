@@ -11,7 +11,7 @@
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
  */
 
-package com.saggezza.javaplow.track;
+package com.saggezza.jtracker.track;
 
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
@@ -19,16 +19,14 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.net.*;
 
 /**
  * PayloadMapC implements the PayloadMap interface
  *  The PayloadMap is used to store all the parameters and configurations that are used
  *  to send data via the HTTP GET request.
  *
- * @version 0.1.0
+ * @version 0.2.0
  * @author Kevin Gleason
  */
 

@@ -11,7 +11,7 @@
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
  */
 
-package com.snowplow.javaplow;
+package com.saggezza.jtracker.track;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -21,14 +21,14 @@ import java.util.Map;
 /**
  * Contractor Class
  * The contractor class is used to create a standard list of assertions that abide by the
- *  snowplow conventions. This ensures that in the following steps of snowplow data processing
+ *  saggezza conventions. This ensures that in the following steps of saggezza data processing
  *  all information needed will be present.
  *
  * Contractor Class, mostly used to assert preconditions
  *  Contractor to verify preconditions, post conditions and invariants.
  *  Uses data structure to hold custom ID contracts for specific jobs
  *
- * @version 0.1.0
+ * @version 0.2.0
  * @author Kevin Gleason
  */
 
@@ -110,9 +110,9 @@ public class PlowContractor<T> {
     /**
      * Non Empty String
      * Some pieces of the Snowplow enrichment process would be thrown off if certain fields were empty.
-     * This function ensured that the string input fits the snowplow standards where required.
+     * This function ensured that the string input fits the saggezza standards where required.
      */
-    public static final Function<String> non_empty_string = new Function<String>() {
+    public static final Function<String> nonEmptyString = new Function<String>() {
         public boolean functionCheck(String input){
             return !input.isEmpty() && input.length() > 0;
         }
@@ -123,10 +123,10 @@ public class PlowContractor<T> {
 
     /**
      * Is Supported Platform
-     * Currently snowplow only supports a few platforms.
-     * @see com.snowplow.javaplow.TrackerC
+     * Currently saggezza only supports a few platforms.
+     * @see TrackerC
      */
-    public static final Function<String> is_supported_platform = new Function<String>(){
+    public static final Function<String> isSupportedPlatform = new Function<String>(){
         public boolean functionCheck(String input){
             for (String i : SUPPORTED_PLATFORMS)
                 if (input.equals(i))
@@ -140,9 +140,9 @@ public class PlowContractor<T> {
 
     /**
      * Non Empty Dictionary
-     * Used to assert that item dictionaries fit the required snowplow standards --Future
+     * Used to assert that item dictionaries fit the required saggezza standards --Future
      */
-    public static final Function<String> non_empty_dict = new Function<String>() {
+    public static final Function<String> nonEmptyDict = new Function<String>() {
         public boolean functionCheck(String input) {
             return !input.equals("{}") && input.length() > 2;
         }
@@ -155,7 +155,7 @@ public class PlowContractor<T> {
      * Positive Number
      * Used to assert that a number field that is required to be positive, is indeed positive.
      */
-    public static final Function<Integer> positive_number = new Function<Integer>() {
+    public static final Function<Integer> positiveNumber = new Function<Integer>() {
         public boolean functionCheck(Integer input){
             return input > 0;
         }
@@ -183,7 +183,7 @@ public class PlowContractor<T> {
         //Check with checkCustomContract
         stringContractor.customContract("dict", string_is_long);
         assert stringContractor.checkCustomContract(contracts,"dict","Hello I Am Kevin");
-        assert integerContractor.checkContract(contracts, PlowContractor.positive_number, -10);
+        assert integerContractor.checkContract(contracts, PlowContractor.positiveNumber, -10);
         System.out.println((System.currentTimeMillis()/10));
         Date date = new Date(System.currentTimeMillis());
         System.out.println(date.toString());

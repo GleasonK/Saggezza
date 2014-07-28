@@ -11,7 +11,7 @@
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
  */
 
-package com.snowplow.javaplow;
+package com.saggezza.jtracker.track;
 
 import org.json.JSONException;
 
@@ -25,12 +25,19 @@ import java.util.Map;
  * The tracker interface contains all usable tracking commands that are implemented
  *  in the TrackerC class.
  *  {@inheritDoc}
- * @see com.snowplow.javaplow.TrackerC
- * @version 0.1.0
+ * @see TrackerC
+ * @version 0.2.0
  * @author Kevin Gleason
  */
 
 public interface Tracker {
+    /**
+     * This command should be used before calling a track command of any sort if analytics
+     * is desired. Keeping it separate allows configuration of the user_id from the client side.
+     * @param user_id The current user of the JavaPlow tracker as used in analytics.
+     */
+    public void setupTrack(String user_id);
+
     /**
      * The basic track command. All other track functions eventually call this.
      * The function compiles all the parameters in the PayloadMap into a proper
@@ -51,7 +58,7 @@ public interface Tracker {
      * @throws JSONException
      * @throws IOException
      */
-    public void track_page_view(String page_url, String page_title, String referrer, String context)
+    public void trackPageView(String page_url, String page_title, String referrer, String context)
             throws IOException, URISyntaxException, JSONException;
 
     /**
@@ -67,7 +74,7 @@ public interface Tracker {
      * @throws URISyntaxException If there is an issue with the tracking call.
      * @throws IOException If there is an issue with processing the HTTP GET
      */
-    public void track_struct_event(String category, String action, String label, String property,
+    public void trackStructEvent(String category, String action, String label, String property,
             int value, String vendor, String context) throws JSONException, URISyntaxException, IOException;
 
     /**
@@ -80,7 +87,7 @@ public interface Tracker {
      * @throws IOException If there is an issue with the tracking call.
      * @throws URISyntaxException If there is an issue with processing the HTTP GET
      */
-    public void track_unstruct_event(String eventVendor, String eventName, Map<String, Object> dictInfo, String context)
+    public void trackUnstructEvent(String eventVendor, String eventName, Map<String, Object> dictInfo, String context)
             throws JSONException, IOException, URISyntaxException;
 
     /**
@@ -93,7 +100,7 @@ public interface Tracker {
      * @throws IOException If there is an issue with the tracking call.
      * @throws URISyntaxException If there is an issue with processing the HTTP GET
      */
-    public void track_unstruct_event(String eventVendor, String eventName, String dictInfo, String context)
+    public void trackUnstructEvent(String eventVendor, String eventName, String dictInfo, String context)
             throws JSONException, IOException, URISyntaxException;
 
     /**
@@ -105,7 +112,7 @@ public interface Tracker {
      * @throws IOException
      * @throws URISyntaxException
      */
-    public void track_screen_view(String name, String id, String context)
+    public void trackScreenView(String name, String id, String context)
             throws JSONException, IOException, URISyntaxException;
 
     /**
@@ -124,8 +131,8 @@ public interface Tracker {
      * @throws URISyntaxException
      * @throws IOException
      */
-    public void track_ecommerce_transaction_item(String order_id, String sku, Double price, Integer quantity, String name,
-            String category, String currency, String context, String transaction_id)throws JSONException, URISyntaxException, IOException;
+    public void trackEcommerceTransactionItem(String order_id, String sku, Double price, Integer quantity, String name,
+            String category, String currency, String context, String transaction_id) throws JSONException, URISyntaxException, IOException;
     /**
      * Track an Ecommerce Transaction
      * Option to provide a Map of only strings of items in the transaction which can be used
@@ -145,7 +152,7 @@ public interface Tracker {
      * @throws IOException
      * @throws URISyntaxException
      */
-    public void track_ecommerce_transaction(String order_id, Double total_value, String affiliation, Double tax_value,
+    public void trackEcommerceTransaction(String order_id, Double total_value, String affiliation, Double tax_value,
             Double shipping, String city, String state, String country, String currency, List<Map<String, String>> items, String context)
             throws JSONException, IOException, URISyntaxException;
 
@@ -162,8 +169,8 @@ public interface Tracker {
             PlowContractor<Map<String, Object>> dictionaryContractor);
 
     /**
-     * Used to add custom parameter. Be careful with use, must abide by snowplow table standards.
-     * See snowplow documentation
+     * Used to add custom parameter. Be careful with use, must abide by saggezza table standards.
+     * See saggezza documentation
      * @param param Parameter to be set.
      * @param val Value for the parameter.
      */

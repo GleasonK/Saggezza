@@ -11,12 +11,13 @@
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
  */
 
-package com.snowplow.javaplow;
+package com.saggezza.jtracker.track;
 
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -24,7 +25,7 @@ import java.util.Set;
  *  The PayloadMap is used to store all the parameters and configurations that are used
  *  to send data via the HTTP GET request.
  * PayloadMaps have an immutable structure for secure and accurate transfers of information.
- * @version 0.1.0
+ * @version 0.2.0
  * @author Kevin Gleason
  */
 
@@ -46,8 +47,15 @@ public interface PayloadMap {
      * @return Returns a new PayloadMap with the key-value-pair
      * @throws UnsupportedEncodingException
      */
-    public PayloadMap add_unstruct(JSONObject dictInfo, boolean encode_base64)
+    public PayloadMap addUnstruct(JSONObject dictInfo, boolean encode_base64)
             throws UnsupportedEncodingException;
+
+    /**
+     * Add a generic source
+     * @param dictInfo The Key-value-pairs of information.
+     * @return Returns a new PayloadMap with the key-value-pairs
+     */
+    public PayloadMap addGeneric(Map<String, Object> dictInfo);
 
     /**
      * Add a JSON Object to the Payload
@@ -56,19 +64,25 @@ public interface PayloadMap {
      * @return Returns a new PayloadMap with the key-value-pair
      * @throws UnsupportedEncodingException
      */
-    public PayloadMap add_json(JSONObject jsonObject, boolean encode_base64)
+    public PayloadMap addJSON(JSONObject jsonObject, boolean encode_base64)
             throws UnsupportedEncodingException;
 
     /**
-     * Add the standard name-value-pairs, snowplow depends on them.
-     * @see com.snowplow.javaplow.TrackerC
+     * Add the standard name-value-pairs, saggezza depends on them.
+     * @see TrackerC
      * @param p Platform
      * @param tv Tracker Version
      * @param tna Namespace
      * @param aid App_id
      * @return Returns a new PayloadMap with the key-value-pair
      */
-    public PayloadMap add_standard_nv_pairs(String p, String tv, String tna, String aid);
+    public PayloadMap addStandardNVPairs(String p, String tv, String tna, String aid);
+
+    /**
+     * Put additional tracking information into the payload. (IP addr)
+     * @return New modified payload.
+     */
+    public PayloadMap addSystemInfo();
 
     /**
      * Add a configuration to the payload. Used currently for "base64_encode"
@@ -76,7 +90,7 @@ public interface PayloadMap {
      * @param config Value of the configuration
      * @return Returns a new PayloadMap with the key-value-pair
      */
-    public PayloadMap add_config(String config_title, boolean config);
+    public PayloadMap addConfig(String config_title, boolean config);
 
     /**
      * Configuration of the PayloadMap for a track page view call.
@@ -87,7 +101,7 @@ public interface PayloadMap {
      * @return Returns a new PayloadMap with the key-value-pair
      * @throws UnsupportedEncodingException
      */
-    public PayloadMap track_page_view_config(String page_url, String page_title, String referrer,
+    public PayloadMap trackPageView_config(String page_url, String page_title, String referrer,
                                              JSONObject context) throws UnsupportedEncodingException;
 
     /**
@@ -101,7 +115,7 @@ public interface PayloadMap {
      * @return Returns a new PayloadMap with the key-value-pairs
      * @throws UnsupportedEncodingException
      */
-    public PayloadMap track_struct_event_config(String category, String action, String label, String property,
+    public PayloadMap trackStructEvent_config(String category, String action, String label, String property,
                                                 String value, JSONObject context)throws UnsupportedEncodingException;
 
     /**
@@ -112,8 +126,20 @@ public interface PayloadMap {
      * @param context Additional JSON context for the tracking call (optional)
      * @throws UnsupportedEncodingException If JSON is in improper formatting
      */
-    public PayloadMap track_unstruct_event_config(String eventVendor, String eventName, JSONObject dictInfo,
+    public PayloadMap trackUnstructEvent_config(String eventVendor, String eventName, JSONObject dictInfo,
                                                   JSONObject context) throws UnsupportedEncodingException;
+
+    /**
+     * Configuration to track an unstructured event.
+     * @param eventVendor The vendor the the event information.
+     * @param eventName A name for the unstructured event being tracked.
+     * @param dictInfo The unstructured information being tracked in dictionary form.
+     * @param context Additional JSON context for the tracking call (optional)
+     * @throws UnsupportedEncodingException If JSON is in improper formatting
+     */
+    public PayloadMap trackGenericEvent_config(String eventVendor, String eventName, Map<String,Object> dictInfo,
+                                                JSONObject context) throws UnsupportedEncodingException;
+
     /**
      * Configuration to track an ecommerce transaction item. Not usually called alone, but called for each
      * individual item of the ecommerce transaction function.
@@ -129,7 +155,7 @@ public interface PayloadMap {
      * @throws java.io.UnsupportedEncodingException
      * @return Returns a new PayloadMap with the key-value-pairs
      */
-    public PayloadMap track_ecommerce_transaction_item_config(String order_id, String sku, String price, String quantity,
+    public PayloadMap trackEcommerceTransactionItem_config(String order_id, String sku, String price, String quantity,
             String name, String category, String currency, JSONObject context, String transaction_id)
             throws UnsupportedEncodingException;
 
@@ -150,7 +176,7 @@ public interface PayloadMap {
      * @return Returns a new PayloadMap with the key-value-pair
      * @throws UnsupportedEncodingException
      */
-    public PayloadMap track_ecommerce_transaction_config(String order_id, String total_value, String affiliation, String tax_value,
+    public PayloadMap trackEcommerceTransaction_config(String order_id, String total_value, String affiliation, String tax_value,
                                                          String shipping, String city, String state, String country, String currency, JSONObject context)
             throws UnsupportedEncodingException;
 
@@ -165,6 +191,7 @@ public interface PayloadMap {
     public Set getConfigKeySet();
     public LinkedHashMap<String,String> getParams();
     public LinkedHashMap<String,Boolean> getConfigs();
+    public Set<Map.Entry<String,String>> getParamEntrySet();
     public String getParam(String key);
     public boolean getConfig(String key);
     public String toString();

@@ -11,32 +11,32 @@
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
  */
 
-package com.saggezza.javaplow.track;
+package com.saggezza.jtracker.track;
 
 /**
  * The version class is used for documentation purposes.
  * It follows the python convention of creating a version identity class
  *
- * @version 0.1.0
+ * @version 0.2.0
  * @author Kevin Gleason
  */
 
 public class Version {
-    static final String VERSION = "0.1.0";
+    static final String VERSION = "0.2.0";
 }
 /**
- * JavaPlow com.saggezza.javaplow.track.Tracker
+ * JavaPlow com.saggezza.jtracker.track.Tracker
 
     Instructions to Use:
 
-     Instantiate a com.saggezza.javaplow.track.PayloadMap and a com.saggezza.javaplow.track.Tracker:
-      com.saggezza.javaplow.track.PayloadMap pd = new com.saggezza.javaplow.track.PayloadMapC();
-      com.saggezza.javaplow.track.Tracker t1 = new com.saggezza.javaplow.track.TrackerC("collector_uri","namespace");
+     Instantiate a com.saggezza.jtracker.track.PayloadMap and a com.saggezza.jtracker.track.Tracker:
+      com.saggezza.jtracker.track.PayloadMap pd = new com.saggezza.jtracker.track.PayloadMapC();
+      com.saggezza.jtracker.track.Tracker t1 = new com.saggezza.jtracker.track.TrackerC("collector_uri","namespace");
 
      Configure payload if needed:
       pd.addJSON("{'Movie':'Shawshank Redemption', 'Time':'100 Minutes' }");
 
-     Attach the payload to the com.saggezza.javaplow.track.Tracker:
+     Attach the payload to the com.saggezza.jtracker.track.Tracker:
       t1.setPayload(pd);
 
      Configure the payload as you must:
