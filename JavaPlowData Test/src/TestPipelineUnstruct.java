@@ -4,18 +4,18 @@
 //Use: Test case scenario for Javaplow tracker
 
 
+
+// Nothing to do with a node, just simulating random numbers and data
+
+import com.saggezza.jtracker.emit.Emitter;
+import com.saggezza.jtracker.track.Tracker;
+import com.saggezza.jtracker.track.TrackerC;
 import org.json.JSONException;
 import org.json.JSONObject;
-<<<<<<< HEAD
-import javaplow.*;
-=======
-import com.snowplow.javaplow.*;
->>>>>>> bad74a14a7c133ed9aa6c94dd0feb0a9dbcf200f
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Random;
-
-// Nothing to do with a node, just simulating random numbers and data
 
 public class TestPipelineUnstruct {
     //Instance Variables
@@ -25,22 +25,22 @@ public class TestPipelineUnstruct {
     private String node_id;
 
     TestPipelineUnstruct(String node_id){
-        this.t1 = new TrackerC("d2pac8zn4o1kva.cloudfront.net", "Data Pipeline MW03 Struct and Unstruct",
-                node_id, "com.saggezza", true, true);
+        this.t1 = new TrackerC(new Emitter(), "Data Pipeline MW03 Struct and Unstruct",
+                node_id, "com.com.saggezza", true, true);
         this.SUCCESS_RATE = getPercent() + 25.0;
         this.NODE_POWER = getPercent() - 45.0;
         this.node_id = node_id;
     }
 
-    public void runNodeIterations(int n)throws JSONException, IOException, URISyntaxException{
+    public void runNodeIterations(int n)throws JSONException, IOException, URISyntaxException {
         TrackerC.debug=true;
         String context = "{'Company':'KevinG inc.', 'Data Work ID':'KGi 002'}";
         for (int i=0; i<n; i++){
             double CPU = getUsageCPU();
             boolean succeeded = succeedOrFail(CPU);
-            t1.track_unstruct_event("Saggezza", "Pipeline Statistics", buildInfo(CPU, succeeded, i), context);
-            t1.track_struct_event("Pipeline Work", "Node Processing","Succeed and CPU", succeeded ? "OK" : "FAILED",
-                    (int) CPU,"com.saggezza",context);
+            t1.trackUnstructEvent("Saggezza", "Pipeline Statistics", buildInfo(CPU, succeeded, i), context);
+            t1.trackStructEvent("Pipeline Work", "Node Processing","Succeed and CPU", succeeded ? "OK" : "FAILED",
+                    (int) CPU,"com.com.saggezza",context);
             try { Thread.sleep(200 * getRandIntZeroToN(10)); }
             catch (InterruptedException e){}
         }

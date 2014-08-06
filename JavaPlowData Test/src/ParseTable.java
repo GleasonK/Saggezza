@@ -1,27 +1,18 @@
-<<<<<<< HEAD
-import javaplow.Tracker;
+import com.saggezza.jtracker.emit.Emitter;
+import com.saggezza.jtracker.track.Tracker;
+import com.saggezza.jtracker.track.TrackerC;
+import org.json.JSONException;
 
-=======
-import com.snowplow.javaplow.*;
->>>>>>> bad74a14a7c133ed9aa6c94dd0feb0a9dbcf200f
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-<<<<<<< HEAD
-import javaplow.*;
-=======
->>>>>>> bad74a14a7c133ed9aa6c94dd0feb0a9dbcf200f
-import org.json.JSONException;
+import java.util.*;
 
 /**
  * Created by Kevin Gleason on 6/5/2014.
  */
 public class ParseTable {
     public static void main(String[] args) throws IOException, JSONException, URISyntaxException {
-        Tracker t1 = new TrackerC("d2pac8zn4o1kva.cloudfront.net", "javaplow.Tracker Test", "JavaPlow", "com.saggezza", true, true);
+        Tracker t1 = new TrackerC(new Emitter(), "javaplow.Tracker Test", "JavaPlow", "com.com.saggezza", true, true);
 //        t1.track();
         t1.setUserID("User1");
         t1.setLanguage("ital");
@@ -50,12 +41,8 @@ public class ParseTable {
             }
             System.out.println("Loop " + i);
             String dict = "{'Iteration Number':'" + i + "'}";
-            t1.track_unstruct_event("Lube Insights", "Data Loop", dict, context);
-            t1.track_struct_event("Items", "Stuff", "Pants", "Green Blue", 3, "com.saggezza", context);
-            t1.track_page_view("www.saggezza.com", "Saggezza Home", "Kevin Gleason", null);
-//            t1.track_ecommerce_transaction_item("IT1023", "SKUVAL", 29.99, 2, "boots", "Shoes","USD",null,null);
-            t1.track_ecommerce_transaction("OID", 19.99, "Kohls", 2.50, 1.99, "Chagrin", "OH", "USA", "USD", lst, context);
-            t1.track_screen_view("GleasonK", "Home Screen", context);
+            t1.trackUnstructEvent("Lube Insights", "Data Loop", dict, context);
+
         }
     }
 }

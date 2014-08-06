@@ -39,7 +39,7 @@ public class SimpleThreading {
         long startTime = System.currentTimeMillis();
         Thread t = new Thread(new MessageLoop());
         t.start();
-
+        System.out.println("HERE");
         threadMessage("Waiting for MessageLoop to finish.");
         while(t.isAlive()){
             //Thread message while waiting, wait 1 second for join

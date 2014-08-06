@@ -1,14 +1,27 @@
-<<<<<<< HEAD
-import javaplow.Tracker;
-import javaplow.TrackerC;
-=======
-import com.snowplow.javaplow.*;
->>>>>>> bad74a14a7c133ed9aa6c94dd0feb0a9dbcf200f
+import com.saggezza.jtracker.emit.Emitter;
+import com.saggezza.jtracker.track.Tracker;
+import com.saggezza.jtracker.track.TrackerC;
 
 /**
  * Created by Kevin Gleason on 6/6/2014.
  */
 public class GlobalTrack {
-    public static Tracker tracker = new TrackerC("d2pac8zn4o1kva.cloudfront.net","GlobalTracker 01",
-            "Pipeline Test 01", "com.saggezza", true, true);
+    public static Tracker tracker = new TrackerC(new Emitter(), "GlobalTracker 01",
+            "Pipeline Test 01", "com.com.saggezza", true, true);
+
+    public static void Trackk(){
+        Thread thread = new Thread(){
+            @Override
+            public void run(){
+                try {
+                    GlobalTrack.tracker.trackPageView("VIEW", "FAKEPAGE", "Kevin", "{'name':'Kevin'}");
+                } catch (Exception e) { e.printStackTrace(); }
+            }
+
+        };
+        thread.start();
+        try {
+            thread.join();
+        } catch (Exception e) { e.printStackTrace(); }
+    }
 }

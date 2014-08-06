@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import javaplow.TrackerC;
-=======
-import com.snowplow.javaplow.*;
->>>>>>> bad74a14a7c133ed9aa6c94dd0feb0a9dbcf200f
+import com.saggezza.jtracker.track.TrackerC;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -59,8 +55,8 @@ public class GlobalTrackTest {
         for (int i=0; i<n; i++){
             double CPU = getUsageCPU();
             boolean succeeded = succeedOrFail(CPU);
-            GlobalTrack.tracker.track_struct_event("Pipeline Work", "Node 0006 Processing", "Succeed and CPU", succeeded ? "OK" : "FAILED",
-                    (int) CPU, "com.saggezza", context);
+            GlobalTrack.tracker.trackStructEvent("Pipeline Work", "Node 0006 Processing", "Succeed and CPU", succeeded ? "OK" : "FAILED",
+                    (int) CPU, "com.com.saggezza", context);
             try { Thread.sleep(200 * getRandIntZeroToN(10)); }
             catch (InterruptedException e){}
         }
@@ -73,7 +69,7 @@ public class GlobalTrackTest {
             double CPU = getUsageCPU();
             boolean succeeded = succeedOrFail(CPU);
             String dictInfo = buildInfo(CPU, succeeded, i);
-            GlobalTrack.tracker.track_unstruct_event("Saggezza", "Pipeline Node " + this.node_id + " Statistics",
+            GlobalTrack.tracker.trackUnstructEvent("Saggezza", "Pipeline Node " + this.node_id + " Statistics",
                     dictInfo, context);
 
             try { Thread.sleep(200 * getRandIntZeroToN(10)); }

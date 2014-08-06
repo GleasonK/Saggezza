@@ -1,6 +1,7 @@
 package com.saggezza.jtracker.track;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -25,7 +26,7 @@ public interface GenericTracker {
      * is desired. Keeping it separate allows configuration of the user_id from the client side.
      * @param user_id The current user of the JavaPlow tracker as used in analytics.
      */
-    public void setupTrack(String user_id);
+    public void setupTrack(String user_id, JSONObject metaData);
 
     /**
      * The basic track command. All other track functions eventually call this.

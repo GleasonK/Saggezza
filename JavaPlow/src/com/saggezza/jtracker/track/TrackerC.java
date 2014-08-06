@@ -110,7 +110,8 @@ public class TrackerC implements Tracker, GenericTracker {
      * {@inheritDoc}
      * @param user_id The current user of the JavaPlow tracker as used in analytics.
      */
-    public void setupTrack(String user_id){
+    public void setupTrack(String user_id, JSONObject metaData){
+
         this.payload = this.payload.addSystemInfo();
         this.setUserID(user_id);
     }
@@ -615,7 +616,7 @@ public class TrackerC implements Tracker, GenericTracker {
 //            System.out.println(dict.toString() + "\n" + t2.getPayload().toString());
 //            t2.setupTrack("Kevin");
 //            t2.trackGenericEvent("Lube Insights", "Data Loop", dict, context);
-            t1.setupTrack("Kevin");
+            t1.setupTrack("Kevin", new JSONObject());
 //            t1.trackUnstructEvent("Lube Insights", "Data Loop", dict, context);
 //            t1.trackStructEvent("Items", "Stuff", "Pants", "Green Blue", 3, DEFAULT_VENDOR, context);
 //            t1.trackPageView("www.saggezza.com/", "Saggezza Home", "Geetha", context);

@@ -35,7 +35,7 @@ public class TrackerC implements Tracker {
     //Static Class variables
     private static final String VERSION = Version.VERSION;
     private static final String DEFAULT_PLATFORM = "pc";
-    public static final String DEFAULT_VENDOR = "com.saggezza";
+    public static final String DEFAULT_VENDOR = "com.com.saggezza";
     public static boolean debug = false;
 
     //Instance Variables
@@ -344,7 +344,7 @@ public class TrackerC implements Tracker {
     //Test case main function
     public static void main(String[] args) throws URISyntaxException, IOException, ClientProtocolException, JSONException {
         ///// GENERICS
-        Tracker t1 = new TrackerC("d2pac8zn4o1kva.cloudfront.net", "javaplow.Tracker Test", "JavaPlow", "com.saggezza", true, true);
+        Tracker t1 = new TrackerC("d2pac8zn4o1kva.cloudfront.net", "javaplow.Tracker Test", "JavaPlow", "com.com.saggezza", true, true);
 //        t1.track();
         t1.setUserID("User1");
         t1.setLanguage("ital");
@@ -367,7 +367,7 @@ public class TrackerC implements Tracker {
             String dict = "{'Iteration Number':'" + i + "'}";
 //            t1.track_unstruct_event("Lube Insights", "Data Loop", dict, context);
 //            t1.track_struct_event("Items", "Stuff", "Pants", "Green Blue", 3, DEFAULT_VENDOR, context);
-//            t1.track_page_view("www.saggezza.com", "Saggezza Home", "Kevin Gleason", null);
+//            t1.track_page_view("www.com.saggezza.com", "Saggezza Home", "Kevin Gleason", null);
 //            t1.track_ecommerce_transaction_item("IT1023", "SKUVAL", 29.99, 2, "boots", "Shoes","USD",null,null);
             t1.track_ecommerce_transaction("OID", 19.99, "Kohls", 2.50, 1.99, "Chagrin", "OH", "USA", "USD", lst, context);
         }
