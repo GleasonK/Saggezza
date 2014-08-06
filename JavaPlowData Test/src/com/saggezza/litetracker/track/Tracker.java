@@ -222,4 +222,10 @@ public interface Tracker {
      * @return Returns the payload, can be used with caution to customize parameters.
      */
     public PayloadMap getPayload();
+
+    /**
+     * Must be called at the end of tracking to close the executor.
+     *  If not called, threads time out after one minute
+     */
+    public void terminateExecutor();
 }

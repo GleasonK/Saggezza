@@ -14,13 +14,16 @@
 package com.saggezza.litetracker.track;
 
 import com.saggezza.litetracker.emit.Emitter;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  *  <p>TrackerC is the implementing class for the Tracker interface.</p>
@@ -55,46 +58,12 @@ public class TrackerC implements Tracker, GenericTracker {
     //Static Class variables
     private static final String VERSION = "0.2.0";
     private static final String DEFAULT_PLATFORM = "pc";
-    public static final String DEFAULT_VENDOR = "com.saggezza";
+    public static final String DEFAULT_VENDOR = "com.com.saggezza";
 
     //Static
     public static boolean debug = false;
     public static boolean track = true;
     public static boolean singleVar=false;
-
-    //Load dependencies in static block
-//    static {
-//        ClassLoader classLoader = TrackerC.class.getClassLoader();
-////        JSONObject j = new JSONObject();
-//        try {
-//
-//            classLoader.loadClass("org.json.JSONObject");
-//            classLoader.loadClass("org.json.JSONException");
-//            classLoader.loadClass("java.io.IOException");
-//            classLoader.loadClass("java.net.URISyntaxException");
-//            classLoader.loadClass("java.util.LinkedHashMap");
-//            classLoader.loadClass("java.util.Map");
-//            classLoader.loadClass("java.io.UnsupportedEncodingException");
-//            classLoader.loadClass("java.sql.Timestamp");
-//            classLoader.loadClass("org.apache.commons.codec.binary.Base64");
-//            classLoader.loadClass("java.util.Random");
-//            classLoader.loadClass("java.util.Set");
-//            classLoader.loadClass("java.nio.charset.Charset");
-//            classLoader.loadClass("org.apache.http.impl.nio.client.CloseableHttpAsyncClient");
-//            classLoader.loadClass("com.saggezza.litetracker.emit.Emitter");
-//            classLoader.loadClass("org.apache.http.HttpResponse");
-//            classLoader.loadClass("org.apache.http.client.methods.HttpGet");
-//            classLoader.loadClass("org.apache.http.client.utils.URIBuilder");
-//            classLoader.loadClass("org.apache.http.impl.nio.client.HttpAsyncClients");
-//            classLoader.loadClass("java.net.URI");
-//            classLoader.loadClass("java.util.Iterator");
-//            classLoader.loadClass("java.util.concurrent.ExecutionException");
-//            classLoader.loadClass("java.util.concurrent.Future");
-//            classLoader.loadClass("com.saggezza.litetracker.track.PayloadMap");
-//        }
-//        catch (ClassNotFoundException e) { e.printStackTrace(); }
-//    }
-
 
     //Instance Variables
     private PayloadMap payload = new PayloadMap();
@@ -102,6 +71,8 @@ public class TrackerC implements Tracker, GenericTracker {
             app_id,
             context_vendor=DEFAULT_VENDOR;
     private Emitter emitter;
+
+    private ExecutorService executor = Executors.newCachedThreadPool();
 
     //Base Constructor
     public TrackerC(Emitter emitter, String namespace) {
@@ -141,7 +112,8 @@ public class TrackerC implements Tracker, GenericTracker {
             System.out.println("Payload:\n" + payload.toString());
             System.out.println("Making HttpGet...");
         }
-        this.emitter.emit(this.payload);
+        this.executor.execute(new Emitter(this.emitter, this.payload));
+//        this.emitter.emit(this.payload);
         this.clearPayload();
     }
 
@@ -380,13 +352,17 @@ public class TrackerC implements Tracker, GenericTracker {
         setStandardNV();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param emitter emitter to be added.
+     */
+    public void setEmitter(Emitter emitter){
+        this.emitter=emitter;
+    }
+
     //Only called once when the Payload class is attacked to the com.com.saggezza.com.saggezza.litetracker.track.Tracker
     private void setStandardNV(){
         this.payload.addStandardNVPairs(DEFAULT_PLATFORM, VERSION, this.namespace, this.app_id);
-    }
-
-    public void setEmitter(Emitter emitter){
-        this.emitter=emitter;
     }
 
     /**
@@ -462,17 +438,24 @@ public class TrackerC implements Tracker, GenericTracker {
      */
     public PayloadMap getPayload(){ return this.payload; }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void terminateExecutor(){
+        this.executor.shutdown();
+    }
+
     //Test case main function
     public static void main(String[] args) throws IOException, JSONException, URISyntaxException {
         ///// Setup
 
         ///// CONFIGURATIONS
-        TrackerC.debug=true;
+        TrackerC.debug=false;
         TrackerC.track=false;
         TrackerC.singleVar=false;
 
         ///// EmitterC
-        Emitter emitter = new Emitter();
+        Emitter emitter = new Emitter("localhost:80","JavaPlow/urlinfo");
 
         ///// REGULAR TRACKER
         Tracker t1 = new TrackerC(emitter, "Tracker Test", "JavaPlow", "com.com.saggezza");
@@ -481,35 +464,42 @@ public class TrackerC implements Tracker, GenericTracker {
         t1.setPlatform("pc");
         t1.setScreenResolution(1260, 1080);
         String context = "{'Zone':'USA', 'Phone':'Droid', 'Time':'2pm'}";
+
         ///// E COMMERCE TEST
-        Map<String,String> items = new HashMap<String, String>();
-        items.put("sku", "SKUVAL"); items.put("quantity","2"); items.put("price","19.99");
-        List<Map<String,String>> lst = new LinkedList<Map<String, String>>();
-        lst.add(items);
+//        Map<String,String> items = new HashMap<String, String>();
+//        items.put("sku", "SKUVAL"); items.put("quantity","2"); items.put("price","19.99");
+//        List<Map<String,String>> lst = new LinkedList<Map<String, String>>();
+//        lst.add(items);
 
         ///// GENERICS
-        GenericTracker t2 = new TrackerC(emitter, "GenericTracker Test", "JavaPlow", "com.com.saggezza");
-        t2.setLanguage("English");
-        t2.setPlatform("pc");
-        t2.setScreenResolution(1200, 1080);
+//        GenericTracker t2 = new TrackerC(emitter, "GenericTracker Test", "JavaPlow", "com.com.saggezza");
+//        t2.setLanguage("English");
+//        t2.setPlatform("pc");
+//        t2.setScreenResolution(1200, 1080);
 
         ///// GENERIC MAP
-        Map<String, Object> dict = new LinkedHashMap<String, Object>();
-
-        dict.put("Username", System.getProperty("user.name"));
-        dict.put("OperatingSystem", System.getProperty("os.name"));
-        dict.put("OS_Version", System.getProperty("os.version"));
-        dict.put("JRE_Version", System.getProperty("java.version"));
+//        Map<String, Object> dict = new LinkedHashMap<String, Object>();
+//
+//        dict.put("Username", System.getProperty("user.name"));
+//        dict.put("OperatingSystem", System.getProperty("os.name"));
+//        dict.put("OS_Version", System.getProperty("os.version"));
+//        dict.put("JRE_Version", System.getProperty("java.version"));
 
         /////TRACK TEST
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 1; i++) {
 //            dict.put("Iteration", i);
-
 //            System.out.println(dict.toString() + "\n" + t2.getPayload().toString());
 //            t2.setupTrack("Kevin");
 //            t2.trackGenericEvent("Lube Insights", "Data Loop", dict, context);
             t1.setupTrack("Kevin", new JSONObject());
+            long s1 = System.currentTimeMillis();
             t1.trackPageView("saggezza.com", "Home Page", "KevinReferred", context);
+            long e1 = System.currentTimeMillis()-s1;
+            long s2 = System.currentTimeMillis();
+            t1.trackPageView("saggezza.com", "Home Page", "KevinReferred", context);
+            t1.terminateExecutor();
+            long e2 = System.currentTimeMillis()-s2;
+            System.out.print(e1 + " " + e2);
 //            t1.trackEcommerceTransactionItem("IT1023", "SKUVAL", 29.99, 2, "boots", "Shoes","USD",null,null);
 //            t1.trackEcommerceTransaction("OID", 19.99, "Kohls", 2.50, 1.99, "Chagrin", "OH", "USA", "USD", lst, context);
         }

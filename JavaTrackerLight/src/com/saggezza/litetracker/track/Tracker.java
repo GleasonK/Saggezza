@@ -13,6 +13,7 @@
 
 package com.saggezza.litetracker.track;
 
+import com.saggezza.litetracker.emit.Emitter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -158,6 +159,12 @@ public interface Tracker {
             throws JSONException, IOException, URISyntaxException;
 
     /**
+     * Set the emitter for the track event
+     * @param emitter emitter to be added.
+     */
+    public void setEmitter(Emitter emitter);
+
+    /**
      * Used to add custom parameter. Be careful with use, must abide by saggezza table standards.
      * See saggezza documentation
      * @param param Parameter to be set.
@@ -215,4 +222,10 @@ public interface Tracker {
      * @return Returns the payload, can be used with caution to customize parameters.
      */
     public PayloadMap getPayload();
+
+    /**
+     * Must be called at the end of tracking to close the executor.
+     *  If not called, threads time out after one minute
+     */
+    public void terminateExecutor();
 }

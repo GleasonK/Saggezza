@@ -20,6 +20,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  *  <p>TrackerC is the implementing class for the Tracker interface.</p>
@@ -68,6 +70,8 @@ public class TrackerC implements Tracker, GenericTracker {
             context_vendor=DEFAULT_VENDOR;
     private Emitter emitter;
 
+    private ExecutorService executor = Executors.newCachedThreadPool();
+
     //Base Constructor
     public TrackerC(Emitter emitter, String namespace) {
         this.emitter=emitter;
@@ -106,7 +110,8 @@ public class TrackerC implements Tracker, GenericTracker {
             System.out.println("Payload:\n" + payload.toString());
             System.out.println("Making HttpGet...");
         }
-        this.emitter.emit(this.payload);
+        this.executor.execute(new Emitter(this.emitter, this.payload));
+//        this.emitter.emit(this.payload);
         this.clearPayload();
     }
 
@@ -345,6 +350,14 @@ public class TrackerC implements Tracker, GenericTracker {
         setStandardNV();
     }
 
+    /**
+     * {@inheritDoc}
+     * @param emitter emitter to be added.
+     */
+    public void setEmitter(Emitter emitter){
+        this.emitter=emitter;
+    }
+
     //Only called once when the Payload class is attacked to the com.com.saggezza.com.saggezza.litetracker.track.Tracker
     private void setStandardNV(){
         this.payload.addStandardNVPairs(DEFAULT_PLATFORM, VERSION, this.namespace, this.app_id);
@@ -423,6 +436,13 @@ public class TrackerC implements Tracker, GenericTracker {
      */
     public PayloadMap getPayload(){ return this.payload; }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void terminateExecutor(){
+        this.executor.shutdown();
+    }
+
     //Test case main function
     public static void main(String[] args) throws IOException, JSONException, URISyntaxException {
         ///// Setup
@@ -433,7 +453,7 @@ public class TrackerC implements Tracker, GenericTracker {
         TrackerC.singleVar=false;
 
         ///// EmitterC
-        Emitter emitter = new Emitter();
+        Emitter emitter = new Emitter("localhost:80","JavaPlow/urlinfo");
 
         ///// REGULAR TRACKER
         Tracker t1 = new TrackerC(emitter, "Tracker Test", "JavaPlow", "com.com.saggezza");
@@ -470,11 +490,14 @@ public class TrackerC implements Tracker, GenericTracker {
 //            t2.setupTrack("Kevin");
 //            t2.trackGenericEvent("Lube Insights", "Data Loop", dict, context);
             t1.setupTrack("Kevin", new JSONObject());
-            long start = System.currentTimeMillis();
+            long s1 = System.currentTimeMillis();
             t1.trackPageView("saggezza.com", "Home Page", "KevinReferred", context);
+            long e1 = System.currentTimeMillis()-s1;
+            long s2 = System.currentTimeMillis();
             t1.trackPageView("saggezza.com", "Home Page", "KevinReferred", context);
-            long stop = System.currentTimeMillis();
-            System.out.print(stop-start + " ");
+            t1.terminateExecutor();
+            long e2 = System.currentTimeMillis()-s2;
+            System.out.print(e1 + " " + e2);
 //            t1.trackEcommerceTransactionItem("IT1023", "SKUVAL", 29.99, 2, "boots", "Shoes","USD",null,null);
 //            t1.trackEcommerceTransaction("OID", 19.99, "Kohls", 2.50, 1.99, "Chagrin", "OH", "USA", "USD", lst, context);
         }

@@ -25,14 +25,14 @@ import java.util.concurrent.Future;
  */
 public class Emitter implements Runnable{
     public static boolean emitAll=true;
-
-    //Static
     private boolean debug = false,
             emit = true,
             singleVar=false;
-
     private String collectorURI,
             path;
+
+    private PayloadMap payload;
+
 
     public Emitter(){
         this.collectorURI=null;
@@ -46,20 +46,24 @@ public class Emitter implements Runnable{
         this.emit=true;
     }
 
-    @Override
-    public void run(){
-
+    public Emitter(Emitter e, PayloadMap p){
+        this.collectorURI = e.collectorURI;
+        this.path = e.path;
+        this.payload = p;
+        this.emit = e.emit;
     }
 
-    public void emit(PayloadMap payload){
+
+    @Override
+    public void run(){
         if (this.emit) {
             if (this.path.charAt(0) != '/')
                 this.path = "/" + this.path;
             try {
                 URI uri = buildURI("http", this.collectorURI, this.path, payload);
                 HttpGet httpGet = makeHttpGet(uri);
-                makeRequest(httpGet);
-                if (TrackerC.debug) System.out.println("URI: " + uri.toString());
+                String responseStr = makeRequest(httpGet);
+                if (TrackerC.debug) System.out.println("URI: " + uri.toString() + "\n" + responseStr);
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -67,6 +71,10 @@ public class Emitter implements Runnable{
             }
         }
     }
+//
+//    public void emit(PayloadMap payload){
+//
+//    }
 
     /* Web functions
     *   Functions used to configure the Get request
@@ -112,22 +120,22 @@ public class Emitter implements Runnable{
 
     // Make the request, do the work you need to, then close the response.
     // All acceptable status codes are in the 200s
-    private void makeRequest(HttpGet httpGet)
+    private String makeRequest(HttpGet httpGet)
             throws IOException {
-
+        String responseStr = Thread.currentThread().getName();
         CloseableHttpAsyncClient httpClient = HttpAsyncClients.createDefault();
         try{
             httpClient.start();
             Future<HttpResponse> future = httpClient.execute(httpGet, null);
             HttpResponse response = future.get();
-            System.out.println("Response: " + response.getStatusLine());
-            System.out.println("Shutting down");
+            responseStr += " response: " + response.getStatusLine();
         }
         catch (ExecutionException e){ e.printStackTrace(); }
         catch (InterruptedException e){ e.printStackTrace(); }
         finally {
             httpClient.close();
         }
+        return responseStr;
     }
 
 }

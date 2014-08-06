@@ -47,22 +47,17 @@ public class TomcatTrack {
             try {Thread.sleep(5);}catch (InterruptedException e){ e.printStackTrace(); }
             if (runTracker) {
                 long start = System.currentTimeMillis();
-                System.out.println("BEGIN SETUP TRACK");
                 t1.setupTrack("KG", new JSONObject());
                 long elapsed = System.currentTimeMillis()-start;
-//                long start1 = System.currentTimeMillis();
-                System.out.println("END SETUP TRACK\nBEGIN TRACK PAGE VIEW");
-                t1.trackPageView("sg","home","Kevin", "");
-                System.out.println("END PAGE VIEW\nBEGIN TRACK UNSTRUCTURED EVENT");
+                long start1 = System.currentTimeMillis();
+                t1.trackPageView("sg", "home", "Kevin", "");
+                long elapsed1 = System.currentTimeMillis()-start1;
+                t1.setEmitter(new Emitter("localhost:80", "JavaPlow/urlinfo"));
+                long start2 = System.currentTimeMillis();
                 t1.trackUnstructEvent("Saggezza", "Pipeline Statistics", buildInfo(CPU, succeeded, i), context);
-
-//                long elapsed1 = System.currentTimeMillis()-start1;
-//                System.out.println("Iter " + i + " - " + elapsed + " " + elapsed1);
+                long elapsed2 = System.currentTimeMillis()-start2;
+                System.out.println("Iter " + i + " - " + elapsed + " " + elapsed1 + " " + elapsed2);
             }
-//            t1.track_struct_event("Pipeline Work", "Node Processing","Succeed and CPU", succeeded ? "OK" : "FAILED",
-//                    (int) CPU,"com.com.saggezza",context);
-//            try { Thread.sleep(500 * getRandIntZeroToN(10)); }
-//            catch (InterruptedException e){}
         }
         long procElapsed = System.currentTimeMillis() - procStart;
         System.out.println("Proc Elapsed " + procElapsed);
@@ -98,6 +93,10 @@ public class TomcatTrack {
     public void quickTrack() throws URISyntaxException, IOException {
         t1.setEmitter(new Emitter("localhost:80", "JavaPlow/urlinfo"));
         t1.track();
+    }
+
+    public void end(){
+        t1.terminateExecutor();
     }
 
     public String buildInfo(double CPU, boolean succeeded, int i) throws JSONException{
@@ -138,39 +137,38 @@ public class TomcatTrack {
 
     public static void main(String[] args) throws JSONException, IOException, URISyntaxException{
         TomcatTrack p1 = new TomcatTrack("Node 0001");
-//        TomcatTrack p2 = new TomcatTrack("Node 0002");
+        TomcatTrack p2 = new TomcatTrack("Node 0002");
 //        TomcatTrack p3 = new TomcatTrack("Node 0003");
 //        TomcatTrack p4 = new TomcatTrack("Node 0004");
 //        TomcatTrack p5 = new TomcatTrack("Node 0005");
-        long s1 = System.currentTimeMillis();
-        p1.quickTrack();
-        long e1 = System.currentTimeMillis()-s1;
-        long start = System.currentTimeMillis();
-        p1.quickTrack();
-        long elapsed = System.currentTimeMillis() - start;
-        System.out.println(elapsed + " " + e1);
-//        p1.resourcesUsed();
-//        System.out.println(p1.toString());
-//        System.out.println(p1.buildInfo(90,false,3));
-//        System.out.println(p2.toString());
-//        System.out.println(p3.toString());
-//        System.out.println(p4.toString());
-//        System.out.println(p5.toString());
-//        p2.toString();
-//        int iters = 1;
+//        long s1 = System.currentTimeMillis();
+//        p1.quickTrack();
+//        long e1 = System.currentTimeMillis()-s1;
 //        long start = System.currentTimeMillis();
-//        p2.runNodeIterations(iters);
-//        long elapsed = System.currentTimeMillis()-start;
-//
-//        TomcatTrack.runTracker=true;
-//        long start2 = System.currentTimeMillis();
-//        p2.runNodeIterations(iters);
-//        long elapsed2 = System.currentTimeMillis()-start2;
-//        long start3 = System.currentTimeMillis();
-//        p2.runNodeIterations(iters);
-//        long elapsed3 = System.currentTimeMillis()-start3;
-//        System.out.println("Elapsed Without " + elapsed + "\nElapsed With " + elapsed2 + "\nElapsed With2 " + elapsed3);
+//        p1.quickTrack();
+//        long elapsed = System.currentTimeMillis() - start;
+//        System.out.println(elapsed + " " + e1);
+//        p1.resourcesUsed();
 
+        ////////////////
+        /////METRIC TEST
+        ////////////////
+        int iters = 5;
+        long start = System.currentTimeMillis();
+        p2.runNodeIterations(iters);
+        long elapsed = System.currentTimeMillis()-start;
+
+        TomcatTrack.runTracker=true;
+        TrackerC.debug=false;
+        Emitter.debug=true;
+        long start2 = System.currentTimeMillis();
+        p2.runNodeIterations(iters);
+        long elapsed2 = System.currentTimeMillis()-start2;
+        long start3 = System.currentTimeMillis();
+        p2.runNodeIterations(iters);
+        long elapsed3 = System.currentTimeMillis()-start3;
+        System.out.println("Elapsed Without " + elapsed + "\nElapsed With " + elapsed2 + "\nElapsed With2 " + elapsed3);
+        p2.end();
 //        p2.runNodeIterations(10);
 //        p3.runNodeIterations(10);
 //        p4.runNodeIterations(10);
