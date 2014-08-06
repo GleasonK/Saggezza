@@ -56,7 +56,7 @@ public class Emitter implements Runnable{
 
     @Override
     public void run(){
-        try { Thread.sleep(5000);} catch (InterruptedException e) { e.printStackTrace(); }
+//        try { Thread.sleep(5000);} catch (InterruptedException e) { e.printStackTrace(); }
         if (this.emit) {
             if (this.path.charAt(0) != '/')
                 this.path = "/" + this.path;
@@ -64,7 +64,7 @@ public class Emitter implements Runnable{
                 URI uri = buildURI("http", this.collectorURI, this.path, payload);
                 HttpGet httpGet = makeHttpGet(uri);
                 String responseStr = makeRequest(httpGet);
-                if (Emitter.debug) System.out.println("URI: " + uri.toString() + "\n" + responseStr);
+                if (Emitter.debug) System.out.println(responseStr + "\n  " + "URI: " + uri.toString());
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             } catch (IOException e) {

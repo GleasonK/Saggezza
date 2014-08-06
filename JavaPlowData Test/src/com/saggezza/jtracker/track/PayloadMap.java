@@ -68,7 +68,7 @@ public interface PayloadMap {
             throws UnsupportedEncodingException;
 
     /**
-     * Add the standard name-value-pairs, com.saggezza depends on them.
+     * Add the standard name-value-pairs, saggezza depends on them.
      * @see com.saggezza.jtracker.track.TrackerC
      * @param p Platform
      * @param tv Tracker Version

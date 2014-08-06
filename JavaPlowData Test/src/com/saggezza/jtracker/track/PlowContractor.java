@@ -17,7 +17,7 @@ package com.saggezza.jtracker.track;
 /**
  * Contractor Class
  * The contractor class is used to create a standard list of assertions that abide by the
- *  com.saggezza conventions. This ensures that in the following steps of com.saggezza data processing
+ *  saggezza conventions. This ensures that in the following steps of saggezza data processing
  *  all information needed will be present.
  *
  * Contractor Class, mostly used to assert preconditions
@@ -76,7 +76,7 @@ public class PlowContractor<T> {
     /**
      * Non Empty String
      * Some pieces of the Snowplow enrichment process would be thrown off if certain fields were empty.
-     * This function ensured that the string input fits the com.saggezza standards where required.
+     * This function ensured that the string input fits the saggezza standards where required.
      */
     public static final Function<String> nonEmptyString = new Function<String>() {
         public boolean functionCheck(String input){
@@ -89,7 +89,7 @@ public class PlowContractor<T> {
 
     /**
      * Is Supported Platform
-     * Currently com.saggezza only supports a few platforms.
+     * Currently saggezza only supports a few platforms.
      * @see com.saggezza.jtracker.track.TrackerC
      */
     public static final Function<String> isSupportedPlatform = new Function<String>(){
@@ -106,7 +106,7 @@ public class PlowContractor<T> {
 
     /**
      * Non Empty Dictionary
-     * Used to assert that item dictionaries fit the required com.saggezza standards --Future
+     * Used to assert that item dictionaries fit the required saggezza standards --Future
      */
     public static final Function<String> nonEmptyDict = new Function<String>() {
         public boolean functionCheck(String input) {

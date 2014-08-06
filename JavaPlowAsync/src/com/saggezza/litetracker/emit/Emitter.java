@@ -1,14 +1,11 @@
 package com.saggezza.litetracker.emit;
 
 import com.saggezza.litetracker.track.PayloadMap;
-import com.saggezza.litetracker.track.TrackerC;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
-
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
-
 
 import java.io.IOException;
 import java.net.URI;
@@ -21,31 +18,50 @@ import java.util.concurrent.Future;
 
 /**
  * An asynchronous emitter class to store requests and send them to the
- *  collector with minimal effect on code.
+ *  collector with minimal effect on code. Implements {@link java.lang.Runnable} so that is can
+ *  be called using a {@link java.util.concurrent.ExecutorService}.
+ *  TODO: Implement a batch request system depending on the collector interface.
  */
 public class Emitter implements Runnable{
-    public static boolean emitAll=true;
-    private boolean debug = false,
-            emit = true,
-            singleVar=false;
+    public static boolean emitAll=true,
+                          debug=false;
+    private boolean emit = true,
+                    singleVar=false;
     private String collectorURI,
-            path;
-
+                   path;
     private PayloadMap payload;
 
-
+    /**
+     * Empty constructor turns emitting off, will not call and Http Request functions.
+     */
     public Emitter(){
         this.collectorURI=null;
         this.path=null;
         this.emit=false;
     }
 
+    /**
+     * Constructor to specify the collector URI. Changes emit to true, allowing for tracking to happen unless the
+     *  static Emitter.emitAll boolean is specified as false,
+     * Currently code assumes http:// and not https://.
+     *  To change scheme see buildURI called in the run() implementation.
+     * @param collectorURI The base path of the collector URI.
+     * @param path
+     */
     public Emitter(String collectorURI, String path){
         this.collectorURI=collectorURI;
         this.path=path;
         this.emit=true;
     }
 
+    /**
+     * Should only be used by the TrackerC class to call track. Constructor required to allow Payload.
+     *  Added here instead of static runnable class to keep application as lightweight as possible.
+     *  Makes a copy of the Emitter used in TrackerC so that changes to the emitter do not effect
+     *  the tracking instance.
+     * @param e Emitter specified in TrackerC
+     * @param p Payload from TrackerC
+     */
     public Emitter(Emitter e, PayloadMap p){
         this.collectorURI = e.collectorURI;
         this.path = e.path;
@@ -53,7 +69,10 @@ public class Emitter implements Runnable{
         this.emit = e.emit;
     }
 
-
+    /**
+     * Implementation of the {@link java.lang.Runnable} interface. Allows the costly request to be made
+     *  in the background.
+     */
     @Override
     public void run(){
         if (this.emit) {
@@ -63,7 +82,7 @@ public class Emitter implements Runnable{
                 URI uri = buildURI("http", this.collectorURI, this.path, payload);
                 HttpGet httpGet = makeHttpGet(uri);
                 String responseStr = makeRequest(httpGet);
-                if (TrackerC.debug) System.out.println("URI: " + uri.toString() + "\n" + responseStr);
+                if (Emitter.debug) System.out.println(responseStr + "\n  " + "URI: " + uri.toString());
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -71,10 +90,6 @@ public class Emitter implements Runnable{
             }
         }
     }
-//
-//    public void emit(PayloadMap payload){
-//
-//    }
 
     /* Web functions
     *   Functions used to configure the Get request

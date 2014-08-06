@@ -57,7 +57,7 @@ public interface Tracker {
      * @param referrer The one who referred you to the page (optional)
      * @param context Additional JSON context for the tracking call (optional)
      * @throws java.net.URISyntaxException
-     * @throws JSONException
+     * @throws org.json.JSONException
      * @throws java.io.IOException
      */
     public void trackPageView(String page_url, String page_title, String referrer, String context)
@@ -72,7 +72,7 @@ public interface Tracker {
      * @param value The value associated with the property being tracked.
      * @param vendor The vendor the the property being tracked. (optional)
      * @param context Additional JSON context for the tracking call (optional)
-     * @throws JSONException If JSON is in improper formatting
+     * @throws org.json.JSONException If JSON is in improper formatting
      * @throws java.net.URISyntaxException If there is an issue with the tracking call.
      * @throws java.io.IOException If there is an issue with processing the HTTP GET
      */
@@ -85,7 +85,7 @@ public interface Tracker {
      * @param eventName A name for the unstructured event being tracked.
      * @param dictInfo The unstructured information being tracked in dictionary form.
      * @param context Additional JSON context for the tracking call (optional)
-     * @throws JSONException If JSON is in improper formatting
+     * @throws org.json.JSONException If JSON is in improper formatting
      * @throws java.io.IOException If there is an issue with the tracking call.
      * @throws java.net.URISyntaxException If there is an issue with processing the HTTP GET
      */
@@ -98,7 +98,7 @@ public interface Tracker {
      * @param eventName A name for the unstructured event being tracked.
      * @param dictInfo The unstructured information being tracked in dictionary form.
      * @param context Additional JSON context for the tracking call (optional)
-     * @throws JSONException If JSON is in improper formatting
+     * @throws org.json.JSONException If JSON is in improper formatting
      * @throws java.io.IOException If there is an issue with the tracking call.
      * @throws java.net.URISyntaxException If there is an issue with processing the HTTP GET
      */
@@ -110,7 +110,7 @@ public interface Tracker {
      * @param name The name of the screen view being tracked
      * @param id The ID of the screen view being tracked.
      * @param context Additional JSON context for the tracking call (optional)
-     * @throws JSONException
+     * @throws org.json.JSONException
      * @throws java.io.IOException
      * @throws java.net.URISyntaxException
      */
@@ -129,7 +129,7 @@ public interface Tracker {
      * @param currency Currency used for the purchase.
      * @param context Additional JSON context for the tracking call (optional)
      * @param transaction_id Transaction ID, if left blank new value will be generated.
-     * @throws JSONException
+     * @throws org.json.JSONException
      * @throws java.net.URISyntaxException
      * @throws java.io.IOException
      */
@@ -150,7 +150,7 @@ public interface Tracker {
      * @param currency The currency used for the purchase
      * @param items A list containing a Map of Strings. Each item must have order ID, sku, price, and quantity.
      * @param context Additional JSON context for the tracking call (optional)
-     * @throws JSONException
+     * @throws org.json.JSONException
      * @throws java.io.IOException
      * @throws java.net.URISyntaxException
      */

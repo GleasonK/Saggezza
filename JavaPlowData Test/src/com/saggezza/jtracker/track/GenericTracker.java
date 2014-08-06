@@ -1,5 +1,6 @@
 package com.saggezza.jtracker.track;
 
+import com.saggezza.jtracker.emit.Emitter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,7 +17,7 @@ import java.util.Map;
  * TODO: Add a specific url for location to write to HDFS.
  * TODO: Add fields to track_generic.
  *  {@inheritDoc}
- * @see com.saggezza.jtracker.track.TrackerC
+ * @see TrackerC
  * @version 0.2.0
  * @author Kevin Gleason
  */
@@ -52,8 +53,14 @@ public interface GenericTracker {
             throws JSONException, IOException, URISyntaxException;
 
     /**
-     * Used to add custom parameter. Be careful with use, must abide by com.saggezza table standards.
-     * See com.saggezza documentation
+     * Set the emitter for the track event
+     * @param emitter emitter to be added.
+     */
+    public void setEmitter(Emitter emitter);
+
+    /**
+     * Used to add custom parameter. Be careful with use, must abide by saggezza table standards.
+     * See saggezza documentation
      * @param param Parameter to be set.
      * @param val Value for the parameter.
      */
@@ -110,4 +117,9 @@ public interface GenericTracker {
      */
     public PayloadMap getPayload();
 
+    /**
+     * Must be called at the end of tracking to close the executor.
+     *  If not called, threads time out after one minute
+     */
+    public void terminateExecutor();
 }

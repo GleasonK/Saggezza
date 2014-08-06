@@ -1,6 +1,7 @@
 package com.saggezza.jtracker.enrich;
 
 import org.apache.commons.codec.binary.Base64;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

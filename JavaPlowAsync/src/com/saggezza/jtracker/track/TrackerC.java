@@ -20,6 +20,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  *  <p>TrackerC is the implementing class for the Tracker interface.</p>
@@ -72,6 +74,8 @@ public class TrackerC implements Tracker, GenericTracker {
             contracts;
     private Emitter emitter;
 
+    private ExecutorService executor = Executors.newCachedThreadPool();
+
     //Base Constructor
     public TrackerC(Emitter emitter, String namespace) {
         this.emitter=emitter;
@@ -113,7 +117,8 @@ public class TrackerC implements Tracker, GenericTracker {
             System.out.println("Payload:\n" + payload.toString());
             System.out.println("Making HttpGet...");
         }
-        this.emitter.emit(this.payload);
+        this.executor.execute(new Emitter(this.emitter, this.payload));
+//        this.emitter.emit(this.payload);
         this.clearPayload();
     }
 
@@ -344,7 +349,13 @@ public class TrackerC implements Tracker, GenericTracker {
         catch (NumberFormatException nfe) { throw new NumberFormatException("Item requires fields: 'sku', 'price','quantity'"); }
     }
 
-
+    /**
+     * {@inheritDoc}
+     * @param emitter emitter to be added.
+     */
+    public void setEmitter(Emitter emitter){
+        this.emitter=emitter;
+    }
 
     //Turn String input into JSONObject
     private JSONObject stringToJSON(String jsonStr) throws JSONException{
@@ -464,6 +475,14 @@ public class TrackerC implements Tracker, GenericTracker {
      * @return
      */
     public PayloadMap getPayload(){ return this.payload; }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public void terminateExecutor(){
+        this.executor.shutdown();
+    }
 
     //Test case main function
     public static void main(String[] args) throws IOException, JSONException, URISyntaxException {

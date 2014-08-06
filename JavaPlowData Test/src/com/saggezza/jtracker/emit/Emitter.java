@@ -1,14 +1,11 @@
 package com.saggezza.jtracker.emit;
 
 import com.saggezza.jtracker.track.PayloadMap;
-import com.saggezza.jtracker.track.TrackerC;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
-
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
-
 
 import java.io.IOException;
 import java.net.URI;
@@ -23,16 +20,18 @@ import java.util.concurrent.Future;
  * An asynchronous emitter class to store requests and send them to the
  *  collector with minimal effect on code.
  */
-public class Emitter {
-    public static boolean emitAll=true;
+public class Emitter implements Runnable{
+    public static boolean emitAll=true,
+            debug=false;
 
-    //Static
-    private boolean debug = false,
-                          emit = true,
-                          singleVar=false;
-
+    private boolean
+            emit = true,
+            singleVar=false;
     private String collectorURI,
-                   path;
+            path;
+
+    private PayloadMap payload;
+
 
     public Emitter(){
         this.collectorURI=null;
@@ -46,15 +45,25 @@ public class Emitter {
         this.emit=true;
     }
 
-    public void emit(PayloadMap payload){
+    public Emitter(Emitter e, PayloadMap p){
+        this.collectorURI = e.collectorURI;
+        this.path = e.path;
+        this.payload = p;
+        this.emit = e.emit;
+    }
+
+
+    @Override
+    public void run(){
+//        try { Thread.sleep(5000);} catch (InterruptedException e) { e.printStackTrace(); }
         if (this.emit) {
             if (this.path.charAt(0) != '/')
                 this.path = "/" + this.path;
             try {
                 URI uri = buildURI("http", this.collectorURI, this.path, payload);
                 HttpGet httpGet = makeHttpGet(uri);
-                makeRequest(httpGet);
-                if (TrackerC.debug) System.out.println("URI: " + uri.toString());
+                String responseStr = makeRequest(httpGet);
+                if (Emitter.debug) System.out.println(responseStr + "\n  " + "URI: " + uri.toString());
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -62,6 +71,10 @@ public class Emitter {
             }
         }
     }
+//
+//    public void emit(PayloadMap payload){
+//
+//    }
 
     /* Web functions
     *   Functions used to configure the Get request
@@ -107,22 +120,22 @@ public class Emitter {
 
     // Make the request, do the work you need to, then close the response.
     // All acceptable status codes are in the 200s
-    private void makeRequest(HttpGet httpGet)
+    private String makeRequest(HttpGet httpGet)
             throws IOException {
-
+        String responseStr = Thread.currentThread().getName();
         CloseableHttpAsyncClient httpClient = HttpAsyncClients.createDefault();
         try{
             httpClient.start();
             Future<HttpResponse> future = httpClient.execute(httpGet, null);
             HttpResponse response = future.get();
-            System.out.println("Response: " + response.getStatusLine());
-            System.out.println("Shutting down");
+            responseStr += " response: " + response.getStatusLine();
         }
         catch (ExecutionException e){ e.printStackTrace(); }
         catch (InterruptedException e){ e.printStackTrace(); }
         finally {
             httpClient.close();
         }
+        return responseStr;
     }
 
 }

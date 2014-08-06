@@ -25,18 +25,18 @@ public class Version {
     static final String VERSION = "0.2.0";
 }
 /**
- * JavaPlow com.com.saggezza.com.saggezza.jtracker.track.Tracker
+ * JavaPlow com.saggezza.jtracker.track.Tracker
 
     Instructions to Use:
 
-     Instantiate a com.com.saggezza.com.saggezza.jtracker.track.PayloadMap and a com.com.saggezza.com.saggezza.jtracker.track.Tracker:
-      com.com.saggezza.com.saggezza.jtracker.track.PayloadMap pd = new com.com.saggezza.com.saggezza.jtracker.track.PayloadMapC();
-      com.com.saggezza.com.saggezza.jtracker.track.Tracker t1 = new com.com.saggezza.com.saggezza.jtracker.track.TrackerC("collector_uri","namespace");
+     Instantiate a com.saggezza.jtracker.track.PayloadMap and a com.saggezza.jtracker.track.Tracker:
+      com.saggezza.jtracker.track.PayloadMap pd = new com.saggezza.jtracker.track.PayloadMapC();
+      com.saggezza.jtracker.track.Tracker t1 = new com.saggezza.jtracker.track.TrackerC("collector_uri","namespace");
 
      Configure payload if needed:
       pd.addJSON("{'Movie':'Shawshank Redemption', 'Time':'100 Minutes' }");
 
-     Attach the payload to the com.com.saggezza.com.saggezza.jtracker.track.Tracker:
+     Attach the payload to the com.saggezza.jtracker.track.Tracker:
       t1.setPayload(pd);
 
      Configure the payload as you must:

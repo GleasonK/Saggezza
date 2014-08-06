@@ -20,6 +20,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  *  <p>TrackerC is the implementing class for the Tracker interface.</p>
@@ -66,11 +68,13 @@ public class TrackerC implements Tracker, GenericTracker {
     private PlowContractor<String> stringContractor = new PlowContractor<String>();
     private PlowContractor<Integer> integerContractor = new PlowContractor<Integer>();
     private String namespace,
-                   app_id,
-                   context_vendor;
+            app_id,
+            context_vendor;
     private boolean base64_encode,
-                    contracts;
+            contracts;
     private Emitter emitter;
+
+    private ExecutorService executor = Executors.newCachedThreadPool();
 
     //Base Constructor
     public TrackerC(Emitter emitter, String namespace) {
@@ -113,9 +117,10 @@ public class TrackerC implements Tracker, GenericTracker {
             System.out.println("Payload:\n" + payload.toString());
             System.out.println("Making HttpGet...");
         }
-        this.emitter.emit(this.payload);
+        this.executor.execute(new Emitter(this.emitter, this.payload));
+//        this.emitter.emit(this.payload);
         this.clearPayload();
-   }
+    }
 
     /**
      * {@inheritDoc}
@@ -152,7 +157,7 @@ public class TrackerC implements Tracker, GenericTracker {
      * @throws java.io.IOException
      */
     public void trackStructEvent(String category, String action, String label, String property,
-                                   int value, String vendor, String context)
+                                 int value, String vendor, String context)
             throws JSONException, IOException {
         String valueStr = String.valueOf(value);
         assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, category);
@@ -272,7 +277,7 @@ public class TrackerC implements Tracker, GenericTracker {
      * @throws java.io.IOException
      */
     public void trackEcommerceTransactionItem(String order_id, String sku, Double price, Integer quantity,
-            String name, String category, String currency, String context, String transaction_id)
+                                              String name, String category, String currency, String context, String transaction_id)
             throws JSONException, IOException {
         assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, order_id);
         assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, sku);
@@ -305,7 +310,7 @@ public class TrackerC implements Tracker, GenericTracker {
      * @throws java.io.IOException
      */
     public void trackEcommerceTransaction(String order_id, Double total_value, String affiliation, Double tax_value,
-            Double shipping, String city, String state, String country, String currency, List<Map<String,String>> items, String context)
+                                          Double shipping, String city, String state, String country, String currency, List<Map<String,String>> items, String context)
             throws JSONException, IOException {
         assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, order_id);
         //Track ecommerce event.
@@ -344,7 +349,13 @@ public class TrackerC implements Tracker, GenericTracker {
         catch (NumberFormatException nfe) { throw new NumberFormatException("Item requires fields: 'sku', 'price','quantity'"); }
     }
 
-
+    /**
+     * {@inheritDoc}
+     * @param emitter emitter to be added.
+     */
+    public void setEmitter(Emitter emitter){
+        this.emitter=emitter;
+    }
 
     //Turn String input into JSONObject
     private JSONObject stringToJSON(String jsonStr) throws JSONException{
@@ -464,6 +475,14 @@ public class TrackerC implements Tracker, GenericTracker {
      * @return
      */
     public PayloadMap getPayload(){ return this.payload; }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public void terminateExecutor(){
+        this.executor.shutdown();
+    }
 
     //Test case main function
     public static void main(String[] args) throws IOException, JSONException, URISyntaxException {

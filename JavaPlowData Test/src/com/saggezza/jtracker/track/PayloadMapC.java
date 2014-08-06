@@ -19,7 +19,10 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 /**
  * PayloadMapC implements the PayloadMap interface
@@ -30,7 +33,7 @@ import java.util.*;
  * @author Kevin Gleason
  */
 
-public class PayloadMapC implements PayloadMap{
+public class PayloadMapC implements PayloadMap {
     private LinkedHashMap<String,String> parameters;
     private LinkedHashMap<String,Boolean> configurations;
 

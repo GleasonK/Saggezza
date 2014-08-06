@@ -45,7 +45,7 @@ public interface GenericTracker {
      * @param eventName A name for the unstructured event being tracked.
      * @param dictInfo The unstructured information being tracked in dictionary form.
      * @param context Additional JSON context for the tracking call (optional)
-     * @throws JSONException If JSON is in improper formatting
+     * @throws org.json.JSONException If JSON is in improper formatting
      * @throws java.io.IOException If there is an issue with the tracking call.
      * @throws java.net.URISyntaxException If there is an issue with processing the HTTP GET
      */
