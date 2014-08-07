@@ -11,7 +11,7 @@
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
  */
 
-package com.saggezza.litetracker.track;
+package com.saggezza.litrackerlite.track;
 
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
@@ -29,8 +29,8 @@ import java.util.Set;
  *  The PayloadMap is used to store all the parameters and configurations that are used
  *  to send data via the HTTP GET request.
  *
- * @version 0.2.0
- * @author Kevin Gleason
+ *  @author Kevin Gleason
+ *  @version 0.5.0
  */
 
 public class PayloadMap {

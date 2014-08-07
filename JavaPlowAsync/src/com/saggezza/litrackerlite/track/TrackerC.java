@@ -11,15 +11,17 @@
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
  */
 
-package com.saggezza.jtracker.track;
+package com.saggezza.litrackerlite.track;
 
-import com.saggezza.jtracker.emit.Emitter;
+import com.saggezza.litrackerlite.emit.Emitter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,7 +34,7 @@ import java.util.concurrent.Executors;
  *
  *  <p><b>To use:</b></p>
  *  <ul>
- *      <li>Import the com.com.saggezza.com.saggezza.jtracker package</li>
+ *      <li>Import the com.com.saggezza.com.saggezza.litrackerlite package</li>
  *      <li>You must first declare a payload and a tracker</li>
  *      <li>Tracker will instantiate with a good-for-tracking payload</li>
  *      <li>(recommended) Build the payload identity with TrackerC set functions (e.g setUser(String user))</li>
@@ -48,13 +50,13 @@ import java.util.concurrent.Executors;
  *      sending logs to your S3 bucket, put `TrackerC.track = false` in your code.</li>
  *    <li>Default values are `TrackerC.debug = false` and `TrackerC.track = true`</li>
  *  </ul>
- *  @version 0.2.0
  *  @author Kevin Gleason
+ *  @version 0.5.0
  */
 
 public class TrackerC implements Tracker, GenericTracker {
     //Static Class variables
-    private static final String VERSION = Version.VERSION;
+    private static final String VERSION = "0.2.0";
     private static final String DEFAULT_PLATFORM = "pc";
     public static final String DEFAULT_VENDOR = "com.com.saggezza";
 
@@ -64,14 +66,10 @@ public class TrackerC implements Tracker, GenericTracker {
     public static boolean singleVar=false;
 
     //Instance Variables
-    private PayloadMap payload = new PayloadMapC();
-    private PlowContractor<String> stringContractor = new PlowContractor<String>();
-    private PlowContractor<Integer> integerContractor = new PlowContractor<Integer>();
+    private PayloadMap payload = new PayloadMap();
     private String namespace,
             app_id,
-            context_vendor;
-    private boolean base64_encode,
-            contracts;
+            context_vendor=DEFAULT_VENDOR;
     private Emitter emitter;
 
     private ExecutorService executor = Executors.newCachedThreadPool();
@@ -81,20 +79,17 @@ public class TrackerC implements Tracker, GenericTracker {
         this.emitter=emitter;
         this.namespace = namespace;
         this.app_id = this.context_vendor = "";
-        this.base64_encode = this.contracts = true;
-        this.setPayload(new PayloadMapC());
+        this.setPayload(new PayloadMap());
     }
 
     //Constructor with all arguments
     public TrackerC(Emitter emitter, String namespace, String app_id,
-                    String context_vendor, boolean base64_encode, boolean contracts) {
+                    String context_vendor) {
         this.emitter=emitter;
         this.namespace = namespace;
         this.app_id = app_id;
         this.context_vendor = context_vendor;
-        this.base64_encode = base64_encode;
-        this.contracts = contracts;
-        this.setPayload(new PayloadMapC());
+        this.setPayload(new PayloadMap());
     }
 
     /**
@@ -103,7 +98,7 @@ public class TrackerC implements Tracker, GenericTracker {
      */
     public void setupTrack(String user_id, JSONObject metaData){
 
-        this.payload = this.payload.addSystemInfo();
+        this.payload.addSystemInfo();
         this.setUserID(user_id);
     }
 
@@ -112,7 +107,7 @@ public class TrackerC implements Tracker, GenericTracker {
      * @throws java.io.IOException
      */
     public void track() {
-        this.payload = this.payload.setTimestamp();
+        this.payload.setTimestamp();
         if (TrackerC.debug) {
             System.out.println("Payload:\n" + payload.toString());
             System.out.println("Making HttpGet...");
@@ -133,13 +128,12 @@ public class TrackerC implements Tracker, GenericTracker {
      */
     public void trackPageView(String page_url, String page_title, String referrer, String context)
             throws JSONException, IOException{
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, page_url);
         if (context != null && !context.equals("")) {
             JSONObject jsonContext = stringToJSON(context);
-            this.payload = this.payload.trackPageView_config(page_url, page_title, referrer, jsonContext);
+            this.payload.trackPageView_config(page_url, page_title, referrer, jsonContext);
         }
         else {
-            this.payload = this.payload.trackPageView_config(page_url, page_title, referrer, null);
+            this.payload.trackPageView_config(page_url, page_title, referrer, null);
         }
         this.track();
     }
@@ -160,14 +154,12 @@ public class TrackerC implements Tracker, GenericTracker {
                                  int value, String vendor, String context)
             throws JSONException, IOException {
         String valueStr = String.valueOf(value);
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, category);
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, valueStr);
         if (context != null && !context.equals("")) {
             JSONObject jsonContext = stringToJSON(context);
-            this.payload = this.payload.trackStructEvent_config(category, action, label, property, valueStr,
+            this.payload.trackStructEvent_config(category, action, label, property, valueStr,
                     jsonContext);
         } else {
-            this.payload = this.payload.trackStructEvent_config(category, action, label, property, valueStr,
+            this.payload.trackStructEvent_config(category, action, label, property, valueStr,
                     null);
         }
         this.track();
@@ -184,15 +176,12 @@ public class TrackerC implements Tracker, GenericTracker {
      */
     public void trackUnstructEvent(String eventVendor, String eventName, Map<String, Object> dictInfo, String context)
             throws JSONException, IOException{
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, eventVendor);
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, eventName);
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyDict, dictInfo.toString());
         JSONObject jsonDict = mapToJSON(dictInfo); //Make compatible for Map<String, Object>
         if (context != null && !context.equals("")) {
             JSONObject jsonContext = stringToJSON(context);
-            this.payload = this.payload.trackUnstructEvent_config(eventVendor, eventName, jsonDict, jsonContext);
+            this.payload.trackUnstructEvent_config(eventVendor, eventName, jsonDict, jsonContext);
         } else {
-            this.payload = this.payload.trackUnstructEvent_config(eventVendor, eventName, jsonDict, null);
+            this.payload.trackUnstructEvent_config(eventVendor, eventName, jsonDict, null);
         }
         this.track();
     }
@@ -208,15 +197,12 @@ public class TrackerC implements Tracker, GenericTracker {
      */
     public void trackUnstructEvent(String eventVendor, String eventName, String dictInfo, String context)
             throws JSONException, IOException {
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, eventVendor);
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, eventName);
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyDict, dictInfo.toString());
         JSONObject jsonDict = stringToJSON(dictInfo); //Make compatible for Map<String, Object>
         if (context != null && !context.equals("")) {
             JSONObject jsonContext = stringToJSON(context);
-            this.payload = this.payload.trackUnstructEvent_config(eventVendor, eventName, jsonDict, jsonContext);
+            this.payload.trackUnstructEvent_config(eventVendor, eventName, jsonDict, jsonContext);
         } else {
-            this.payload = this.payload.trackUnstructEvent_config(eventVendor, eventName, jsonDict, null);
+            this.payload.trackUnstructEvent_config(eventVendor, eventName, jsonDict, null);
         }
         this.track();
     }
@@ -232,14 +218,11 @@ public class TrackerC implements Tracker, GenericTracker {
      */
     public void trackGenericEvent(String eventVendor, String eventName, Map<String,Object> dictInfo, String context)
             throws JSONException, IOException {
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, eventVendor);
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, eventName);
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyDict, dictInfo.toString());
         if (context != null && !context.equals("")) {
             JSONObject jsonContext = stringToJSON(context);
-            this.payload = this.payload.trackGenericEvent_config(eventVendor, eventName, dictInfo, jsonContext);
+            this.payload.trackGenericEvent_config(eventVendor, eventName, dictInfo, jsonContext);
         } else {
-            this.payload = this.payload.trackGenericEvent_config(eventVendor, eventName, dictInfo, null);
+            this.payload.trackGenericEvent_config(eventVendor, eventName, dictInfo, null);
         }
         this.track();
     }
@@ -254,7 +237,6 @@ public class TrackerC implements Tracker, GenericTracker {
      */
     public void trackScreenView(String name, String id, String context)
             throws JSONException, IOException {
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, name);
         Map<String, Object> screenViewProperties = new LinkedHashMap<String, Object>();
         screenViewProperties.put("Name", name); // or String screenVie... = "{'name': '"+ name + "'}"
         if (id != null)
@@ -279,14 +261,12 @@ public class TrackerC implements Tracker, GenericTracker {
     public void trackEcommerceTransactionItem(String order_id, String sku, Double price, Integer quantity,
                                               String name, String category, String currency, String context, String transaction_id)
             throws JSONException, IOException {
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, order_id);
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, sku);
         if (context != null && !context.equals("")) {
             JSONObject jsonContext = stringToJSON(context);
-            this.payload = this.payload.trackEcommerceTransactionItem_config(order_id, sku, doubleCheck(price),
+            this.payload.trackEcommerceTransactionItem_config(order_id, sku, doubleCheck(price),
                     integerCheck(quantity), stringCheck(name), stringCheck(category), stringCheck(currency), jsonContext, null);
         } else {
-            this.payload = this.payload.trackEcommerceTransactionItem_config(order_id, sku, doubleCheck(price),
+            this.payload.trackEcommerceTransactionItem_config(order_id, sku, doubleCheck(price),
                     integerCheck(quantity), stringCheck(name), stringCheck(category), stringCheck(currency), null, null);
         }
         this.track();
@@ -312,15 +292,14 @@ public class TrackerC implements Tracker, GenericTracker {
     public void trackEcommerceTransaction(String order_id, Double total_value, String affiliation, Double tax_value,
                                           Double shipping, String city, String state, String country, String currency, List<Map<String,String>> items, String context)
             throws JSONException, IOException {
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, order_id);
         //Track ecommerce event.
         if (context != null && !context.equals("")) {
             JSONObject jsonContext = stringToJSON(context);
-            this.payload = this.payload.trackEcommerceTransaction_config(order_id, doubleCheck(total_value), stringCheck(affiliation),
+            this.payload.trackEcommerceTransaction_config(order_id, doubleCheck(total_value), stringCheck(affiliation),
                     doubleCheck(tax_value), doubleCheck(shipping), stringCheck(city), stringCheck(state), stringCheck(country),
                     stringCheck(currency), jsonContext);
         } else {
-            this.payload = this.payload.trackEcommerceTransaction_config(order_id, doubleCheck(total_value), stringCheck(affiliation),
+            this.payload.trackEcommerceTransaction_config(order_id, doubleCheck(total_value), stringCheck(affiliation),
                     doubleCheck(tax_value), doubleCheck(shipping), stringCheck(city), stringCheck(state), stringCheck(country),
                     stringCheck(currency), null);
         }
@@ -349,13 +328,7 @@ public class TrackerC implements Tracker, GenericTracker {
         catch (NumberFormatException nfe) { throw new NumberFormatException("Item requires fields: 'sku', 'price','quantity'"); }
     }
 
-    /**
-     * {@inheritDoc}
-     * @param emitter emitter to be added.
-     */
-    public void setEmitter(Emitter emitter){
-        this.emitter=emitter;
-    }
+
 
     //Turn String input into JSONObject
     private JSONObject stringToJSON(String jsonStr) throws JSONException{
@@ -366,7 +339,7 @@ public class TrackerC implements Tracker, GenericTracker {
     //Clear Payload for next iterations
     private void clearPayload() {
         String[] standards = new String[] {"uid", "res", "vp", "cd", "tz", "br_lang", "os_nm", "os_fam"};
-        PayloadMap standPairs = new PayloadMapC();
+        PayloadMap standPairs = new PayloadMap();
         Map<String, String> currentParam = this.payload.getParams();
         for (String s : standards)
             if (currentParam.containsKey(s))
@@ -376,13 +349,20 @@ public class TrackerC implements Tracker, GenericTracker {
 
     private void setPayload(PayloadMap payload){
         this.payload=payload;
-        this.payload = this.payload.addConfig("encode_base64", this.base64_encode);
         setStandardNV();
     }
 
-    //Only called once when the Payload class is attacked to the com.com.saggezza.com.saggezza.jtracker.track.Tracker
+    /**
+     * {@inheritDoc}
+     * @param emitter emitter to be added.
+     */
+    public void setEmitter(Emitter emitter){
+        this.emitter=emitter;
+    }
+
+    //Only called once when the Payload class is attacked to the com.com.saggezza.com.saggezza.litrackerlite.track.Tracker
     private void setStandardNV(){
-        this.payload = this.payload.addStandardNVPairs(DEFAULT_PLATFORM, VERSION, this.namespace, this.app_id);
+        this.payload.addStandardNVPairs(DEFAULT_PLATFORM, VERSION, this.namespace, this.app_id);
     }
 
     /**
@@ -391,16 +371,7 @@ public class TrackerC implements Tracker, GenericTracker {
      * @param val Value for the parameter.
      */
     public void setParam(String param, String val){
-        this.payload = this.payload.add(param, val);
-    }
-
-    /**
-     * {@inheritDoc}
-     * @param param Configuration to be set.
-     * @param val Value for the parameter.
-     */
-    public void setConfig(String param, boolean val){
-        this.payload = this.payload.addConfig(param, val);
+        this.payload.add(param, val);
     }
 
     /**
@@ -408,8 +379,7 @@ public class TrackerC implements Tracker, GenericTracker {
      * @param platform The platform being tracked, currently supports "pc", "tv", "mob", "cnsl", and "iot".
      */
     public void setPlatform(String platform){//contract true
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.isSupportedPlatform, platform);
-        this.payload = this.payload.add("p", platform);
+        this.payload.add("p", platform);
     }
 
     /**
@@ -417,8 +387,7 @@ public class TrackerC implements Tracker, GenericTracker {
      * @param userID The User ID String.
      */
     public void setUserID(String userID){
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, userID);
-        this.payload = this.payload.add("uid", userID);
+        this.payload.add("uid", userID);
     }
 
     /**
@@ -427,9 +396,7 @@ public class TrackerC implements Tracker, GenericTracker {
      * @param height Height of the screen in pixels.
      */
     public void setScreenResolution(int width, int height){
-        assert this.integerContractor.checkContract(this.contracts, PlowContractor.positiveNumber, height);
-        assert this.integerContractor.checkContract(this.contracts, PlowContractor.positiveNumber, width);
-        this.payload = this.payload.add("res", String.valueOf(width) + "x" + String.valueOf(height));
+        this.payload.add("res", String.valueOf(width) + "x" + String.valueOf(height));
     }
 
     /**
@@ -438,9 +405,7 @@ public class TrackerC implements Tracker, GenericTracker {
      * @param height Height of the viewport in pixels.
      */
     public void setViewport(int width, int height){
-        assert this.integerContractor.checkContract(this.contracts, PlowContractor.positiveNumber, height);
-        assert this.integerContractor.checkContract(this.contracts, PlowContractor.positiveNumber, width);
-        this.payload = this.payload.add("vp", String.valueOf(width) + "x" + String.valueOf(height));
+        this.payload.add("vp", String.valueOf(width) + "x" + String.valueOf(height));
     }
 
     /**
@@ -448,8 +413,7 @@ public class TrackerC implements Tracker, GenericTracker {
      * @param depth Depth of the color.
      */
     public void setColorDepth(int depth){
-        assert this.integerContractor.checkContract(this.contracts, PlowContractor.positiveNumber, depth) || depth==0;
-        this.payload = this.payload.add("cd", String.valueOf(depth));
+        this.payload.add("cd", String.valueOf(depth));
     }
 
     /**
@@ -457,8 +421,7 @@ public class TrackerC implements Tracker, GenericTracker {
      * @param timezone Timezone where tracking takes place.
      */
     public void setTimezone(String timezone){
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, timezone);
-        this.payload = this.payload.add("tz", timezone);
+        this.payload.add("tz", timezone);
     }
 
     /**
@@ -466,8 +429,7 @@ public class TrackerC implements Tracker, GenericTracker {
      * @param language Language for info tracked.
      */
     public void setLanguage(String language){
-        assert this.stringContractor.checkContract(this.contracts, PlowContractor.nonEmptyString, language);
-        this.payload = this.payload.add("br_lang", language);
+        this.payload.add("br_lang", language);
     }
 
     /**
@@ -475,7 +437,6 @@ public class TrackerC implements Tracker, GenericTracker {
      * @return
      */
     public PayloadMap getPayload(){ return this.payload; }
-
 
     /**
      * {@inheritDoc}
@@ -489,15 +450,15 @@ public class TrackerC implements Tracker, GenericTracker {
         ///// Setup
 
         ///// CONFIGURATIONS
-        TrackerC.debug=true;
+        TrackerC.debug=false;
         TrackerC.track=false;
-        TrackerC.singleVar=true;
+        TrackerC.singleVar=false;
 
         ///// EmitterC
-        Emitter emitter = new Emitter("localhost:80", "/javaplow");
+        Emitter emitter = new Emitter("localhost:80","JavaPlow/urlinfo");
 
         ///// REGULAR TRACKER
-        Tracker t1 = new TrackerC(emitter, "Tracker Test", "JavaPlow", "com.com.saggezza", true, true);
+        Tracker t1 = new TrackerC(emitter, "Tracker Test", "JavaPlow", "com.com.saggezza");
 //        t1.setUserID("User1");
         t1.setLanguage("eng");
         t1.setPlatform("pc");
@@ -505,38 +466,42 @@ public class TrackerC implements Tracker, GenericTracker {
         String context = "{'Zone':'USA', 'Phone':'Droid', 'Time':'2pm'}";
 
         ///// E COMMERCE TEST
-        Map<String,String> items = new HashMap<String, String>();
-        items.put("sku", "SKUVAL"); items.put("quantity","2"); items.put("price","19.99");
-        List<Map<String,String>> lst = new LinkedList<Map<String, String>>();
-        lst.add(items);
+//        Map<String,String> items = new HashMap<String, String>();
+//        items.put("sku", "SKUVAL"); items.put("quantity","2"); items.put("price","19.99");
+//        List<Map<String,String>> lst = new LinkedList<Map<String, String>>();
+//        lst.add(items);
 
         ///// GENERICS
-        GenericTracker t2 = new TrackerC(emitter, "GenericTracker Test", "JavaPlow", "com.com.saggezza", true, true);
-        t2.setLanguage("English");
-        t2.setPlatform("pc");
-        t2.setScreenResolution(1200, 1080);
+//        GenericTracker t2 = new TrackerC(emitter, "GenericTracker Test", "JavaPlow", "com.com.saggezza");
+//        t2.setLanguage("English");
+//        t2.setPlatform("pc");
+//        t2.setScreenResolution(1200, 1080);
 
         ///// GENERIC MAP
-        Map<String, Object> dict = new LinkedHashMap<String, Object>();
-
-        dict.put("Username", System.getProperty("user.name"));
-        dict.put("OperatingSystem", System.getProperty("os.name"));
-        dict.put("OS_Version", System.getProperty("os.version"));
-        dict.put("JRE_Version", System.getProperty("java.version"));
+//        Map<String, Object> dict = new LinkedHashMap<String, Object>();
+//
+//        dict.put("Username", System.getProperty("user.name"));
+//        dict.put("OperatingSystem", System.getProperty("os.name"));
+//        dict.put("OS_Version", System.getProperty("os.version"));
+//        dict.put("JRE_Version", System.getProperty("java.version"));
 
         /////TRACK TEST
-        for (int i = 0; i < 15; i++) {
-            try { Thread.sleep(3000); }
-            catch (InterruptedException e){}
-            System.out.println("Loop " + i);
-            dict.put("Iteration", i);
-
+        for (int i = 0; i < 1; i++) {
+//            dict.put("Iteration", i);
 //            System.out.println(dict.toString() + "\n" + t2.getPayload().toString());
 //            t2.setupTrack("Kevin");
 //            t2.trackGenericEvent("Lube Insights", "Data Loop", dict, context);
             t1.setupTrack("Kevin", new JSONObject());
+            long s1 = System.currentTimeMillis();
+            t1.trackPageView("saggezza.com", "Home Page", "KevinReferred", context);
+            long e1 = System.currentTimeMillis()-s1;
+            long s2 = System.currentTimeMillis();
+            t1.trackPageView("saggezza.com", "Home Page", "KevinReferred", context);
+            t1.terminateExecutor();
+            long e2 = System.currentTimeMillis()-s2;
+            System.out.print(e1 + " " + e2);
 //            t1.trackEcommerceTransactionItem("IT1023", "SKUVAL", 29.99, 2, "boots", "Shoes","USD",null,null);
-            t1.trackEcommerceTransaction("OID", 19.99, "Kohls", 2.50, 1.99, "Chagrin", "OH", "USA", "USD", lst, context);
+//            t1.trackEcommerceTransaction("OID", 19.99, "Kohls", 2.50, 1.99, "Chagrin", "OH", "USA", "USD", lst, context);
         }
     }
 }

@@ -1,7 +1,6 @@
-package com.saggezza.litetracker.enrich;
+package com.saggezza.litracker.enrich;
 
 import org.apache.commons.codec.binary.Base64;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -11,8 +10,8 @@ import java.util.List;
  * <p>Currently enrich is separate from the EnrichGeneric class. May be combined with an if statement in a
  *   future version.</p>
  * <p>Do not allow data tracked to contain commas, will throw off the CSV</p>
- * @author Kevin Gleason
- * @version 0.0.2
+ *  @author Kevin Gleason
+ *  @version 0.5.0
  */
 public class Enrich {
 

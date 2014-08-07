@@ -4,13 +4,13 @@
 //Use: Test case scenario for Javaplow tracker
 
 
-import com.saggezza.jtracker.emit.Emitter;
-import com.saggezza.jtracker.track.Tracker;
-import com.saggezza.jtracker.track.TrackerC;
+//import com.saggezza.jtracker.emit.Emitter;
+//import com.saggezza.jtracker.track.Tracker;
+//import com.saggezza.jtracker.track.TrackerC;
 
-//import com.saggezza.litetracker.emit.Emitter;
-//import com.saggezza.litetracker.track.Tracker;
-//import com.saggezza.litetracker.track.TrackerC;
+import com.saggezza.litetracker.emit.Emitter;
+import com.saggezza.litetracker.track.Tracker;
+import com.saggezza.litetracker.track.TrackerC;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,8 +29,8 @@ public class TomcatTrack {
     private String node_id;
 
     TomcatTrack(String node_id){
-        this.t1 = new TrackerC(new Emitter(), "Data Pipeline MW03 Struct and Unstruct", node_id, "com.com.saggezza", true, true);
-//        this.t1 = new TrackerC(new Emitter(), "Data Pipeline MW03 Struct and Unstruct", node_id, "com.com.saggezza");
+//        this.t1 = new TrackerC(new Emitter(), "Data Pipeline MW03 Struct and Unstruct", node_id, "com.com.saggezza", true, true);
+        this.t1 = new TrackerC(new Emitter(), "Data Pipeline MW03 Struct and Unstruct", node_id, "com.com.saggezza");
         this.SUCCESS_RATE = getPercent() + 25.0;
         this.NODE_POWER = getPercent() - 45.0;
         this.node_id = node_id;

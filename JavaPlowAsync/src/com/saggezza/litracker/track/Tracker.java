@@ -11,9 +11,9 @@
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
  */
 
-package com.saggezza.litetracker.track;
+package com.saggezza.litracker.track;
 
-import com.saggezza.litetracker.emit.Emitter;
+import com.saggezza.litracker.emit.Emitter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,8 +28,8 @@ import java.util.Map;
  *  in the TrackerC class.
  *  {@inheritDoc}
  * @see TrackerC
- * @version 0.2.0
- * @author Kevin Gleason
+ *  @author Kevin Gleason
+ *  @version 0.5.0
  */
 
 public interface Tracker {

@@ -11,7 +11,7 @@
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
  */
 
-package com.saggezza.jtracker.track;
+package com.saggezza.litracker.track;
 
 import org.json.JSONObject;
 
@@ -25,8 +25,8 @@ import java.util.Set;
  *  The PayloadMap is used to store all the parameters and configurations that are used
  *  to send data via the HTTP GET request.
  * PayloadMaps have an immutable structure for secure and accurate transfers of information.
- * @version 0.2.0
- * @author Kevin Gleason
+ *  @author Kevin Gleason
+ *  @version 0.5.0
  */
 
 //Immutable structure -- Payload will always be a string.
@@ -69,7 +69,7 @@ public interface PayloadMap {
 
     /**
      * Add the standard name-value-pairs, saggezza depends on them.
-     * @see com.saggezza.jtracker.track.TrackerC
+     * @see com.saggezza.litracker.track.TrackerC
      * @param p Platform
      * @param tv Tracker Version
      * @param tna Namespace

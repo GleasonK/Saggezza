@@ -11,11 +11,7 @@
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
  */
 
-package com.saggezza.jtracker.track;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+package com.saggezza.litracker.track;
 
 
 /**
@@ -28,8 +24,8 @@ import java.util.Map;
  *  Contractor to verify preconditions, post conditions and invariants.
  *  Uses data structure to hold custom ID contracts for specific jobs
  *
- * @version 0.2.0
- * @author Kevin Gleason
+ *  @author Kevin Gleason
+ *  @version 0.5.0
  */
 
 public class PlowContractor<T> {
@@ -94,7 +90,7 @@ public class PlowContractor<T> {
     /**
      * Is Supported Platform
      * Currently saggezza only supports a few platforms.
-     * @see com.saggezza.jtracker.track.TrackerC
+     * @see com.saggezza.litracker.track.TrackerC
      */
     public static final Function<String> isSupportedPlatform = new Function<String>(){
         public boolean functionCheck(String input){

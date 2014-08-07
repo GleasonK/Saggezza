@@ -1,6 +1,6 @@
-package com.saggezza.jtracker.track;
+package com.saggezza.litrackerlite.track;
 
-import com.saggezza.jtracker.emit.Emitter;
+import com.saggezza.litrackerlite.emit.Emitter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,8 +18,8 @@ import java.util.Map;
  * TODO: Add fields to track_generic.
  *  {@inheritDoc}
  * @see TrackerC
- * @version 0.2.0
- * @author Kevin Gleason
+ *  @author Kevin Gleason
+ *  @version 0.5.0
  */
 public interface GenericTracker {
     /**

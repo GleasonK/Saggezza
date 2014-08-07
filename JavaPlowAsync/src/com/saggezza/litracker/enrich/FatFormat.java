@@ -1,4 +1,4 @@
-package com.saggezza.jtracker.enrich;
+package com.saggezza.litracker.enrich;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,8 +6,8 @@ import java.util.Map;
 /**
  * FatFormat class is used to find the index where a value should be placed in O(1) lookup time.
  * <p>Do not allow data tracked to contain commas, will throw off the CSV</p>
- * @author Kevin Gleason
- * @version 0.0.2
+ *  @author Kevin Gleason
+ *  @version 0.5.0
  */
 public class FatFormat {
     private static final Map<String,Integer> fatIndexMap = new HashMap<String, Integer>();
